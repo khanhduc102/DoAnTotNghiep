@@ -1,0 +1,37 @@
+{
+  "name": "duchome-backend",
+  "version": "1.0.0",
+  "description": "DUCHOME - API quan ly cho thue phong tro",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "seed": "node prisma/seed.js"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "keywords": [
+    "duchome",
+    "rental"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.1",
+    "express": "^4.22.3",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.12.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14",
+    "prisma": "^6.19.3"
+  }
+}

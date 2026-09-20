@@ -1,0 +1,323 @@
+// DUCHOME - Schema CSDL he thong quan ly cho thue phong tro
+// Quy uoc: tien te luu kieu Int, don vi VND (VND khong co phan le)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- ENUM ----------
+
+enum Role {
+  ADMIN
+  OWNER
+  TENANT
+}
+
+enum UserStatus {
+  ACTIVE
+  LOCKED
+}
+
+enum RoomStatus {
+  AVAILABLE // con trong
+  RENTED // da cho thue
+  HIDDEN // chu tro an di
+}
+
+enum PostStatus {
+  PENDING // cho admin duyet
+  APPROVED // da duyet, hien thi cho tenant
+  REJECTED // bi tu choi
+  HIDDEN // go khoi trang tim kiem
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED // tenant tu huy
+}
+
+enum ContractStatus {
+  ACTIVE
+  ENDED // het han binh thuong
+  TERMINATED // cham dut truoc han
+}
+
+enum InvoiceStatus {
+  UNPAID
+  PAID
+  OVERDUE
+}
+
+// ---------- 1. NGUOI DUNG ----------
+
+model User {
+  id        Int        @id @default(autoincrement())
+  email     String     @unique @db.VarChar(120)
+  phone     String?    @unique @db.VarChar(20)
+  password  String     @db.VarChar(255)
+  fullName  String     @db.VarChar(120)
+  avatar    String?    @db.VarChar(255)
+  role      Role       @default(TENANT)
+  status    UserStatus @default(ACTIVE)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  properties      Property[]
+  rentalRequests  RentalRequest[]
+  tenantContracts Contract[]      @relation("TenantContracts")
+  ownerContracts  Contract[]      @relation("OwnerContracts")
+  reviewedPosts   Post[]          @relation("PostReviewer")
+
+  @@index([role])
+  @@map("users")
+}
+
+// ---------- 2. NHA TRO / TOA NHA ----------
+
+model Property {
+  id            Int      @id @default(autoincrement())
+  ownerId       Int
+  name          String   @db.VarChar(150)
+  address       String   @db.VarChar(255)
+  province      String   @db.VarChar(100)
+  district      String   @db.VarChar(100)
+  ward          String   @db.VarChar(100)
+  description   String?  @db.Text
+  electricPrice Int      @default(3500) // VND / kWh
+  waterPrice    Int      @default(15000) // VND / m3
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  owner       User         @relation(fields: [ownerId], references: [id])
+  rooms       Room[]
+  serviceFees ServiceFee[]
+
+  @@index([ownerId])
+  @@index([province, district])
+  @@map("properties")
+}
+
+// ---------- 3. PHONG ----------
+
+model Room {
+  id           Int        @id @default(autoincrement())
+  propertyId   Int
+  code         String     @db.VarChar(50) // vd: P101
+  area         Float // m2
+  price        Int // gia thue / thang (VND)
+  deposit      Int        @default(0)
+  maxOccupants Int        @default(2)
+  status       RoomStatus @default(AVAILABLE)
+  description  String?    @db.Text
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  property  Property        @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  images    RoomImage[]
+  amenities RoomAmenity[]
+  posts     Post[]
+  requests  RentalRequest[]
+  contracts Contract[]
+
+  @@unique([propertyId, code])
+  @@index([status])
+  @@index([price])
+  @@map("rooms")
+}
+
+// ---------- 4. ANH PHONG ----------
+
+model RoomImage {
+  id        Int      @id @default(autoincrement())
+  roomId    Int
+  url       String   @db.VarChar(255)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@index([roomId])
+  @@map("room_images")
+}
+
+// ---------- 5. TIEN ICH ----------
+
+model Amenity {
+  id   Int     @id @default(autoincrement())
+  name String  @unique @db.VarChar(80)
+  icon String? @db.VarChar(80)
+
+  rooms RoomAmenity[]
+
+  @@map("amenities")
+}
+
+// ---------- 6. TIEN ICH CUA PHONG (bang trung gian) ----------
+
+model RoomAmenity {
+  roomId    Int
+  amenityId Int
+
+  room    Room    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  amenity Amenity @relation(fields: [amenityId], references: [id], onDelete: Cascade)
+
+  @@id([roomId, amenityId])
+  @@index([amenityId])
+  @@map("room_amenities")
+}
+
+// ---------- 7. PHI DICH VU (rac, wifi, gui xe...) ----------
+
+model ServiceFee {
+  id         Int      @id @default(autoincrement())
+  propertyId Int
+  name       String   @db.VarChar(100)
+  price      Int // VND
+  unit       String   @db.VarChar(30) // thang / nguoi / xe
+  createdAt  DateTime @default(now())
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@map("service_fees")
+}
+
+// ---------- 8. TIN DANG ----------
+
+model Post {
+  id           Int        @id @default(autoincrement())
+  roomId       Int
+  title        String     @db.VarChar(200)
+  description  String     @db.Text
+  status       PostStatus @default(PENDING)
+  reviewedById Int?
+  reviewedAt   DateTime?
+  rejectReason String?    @db.VarChar(255)
+  viewCount    Int        @default(0)
+  publishedAt  DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  room       Room  @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  reviewedBy User? @relation("PostReviewer", fields: [reviewedById], references: [id])
+
+  @@index([roomId])
+  @@index([status])
+  @@map("posts")
+}
+
+// ---------- 9. YEU CAU THUE ----------
+
+model RentalRequest {
+  id             Int           @id @default(autoincrement())
+  roomId         Int
+  tenantId       Int
+  note           String?       @db.VarChar(500)
+  expectedMoveIn DateTime?
+  status         RequestStatus @default(PENDING)
+  ownerReply     String?       @db.VarChar(500)
+  respondedAt    DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  room   Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  tenant User @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([roomId])
+  @@index([tenantId])
+  @@index([status])
+  @@map("rental_requests")
+}
+
+// ---------- 10. HOP DONG ----------
+
+model Contract {
+  id           Int            @id @default(autoincrement())
+  code         String         @unique @db.VarChar(30)
+  roomId       Int
+  tenantId     Int
+  ownerId      Int
+  startDate    DateTime
+  endDate      DateTime
+  price        Int // gia thue chot trong hop dong
+  deposit      Int            @default(0)
+  status       ContractStatus @default(ACTIVE)
+  note         String?        @db.Text
+  terminatedAt DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  room   Room @relation(fields: [roomId], references: [id])
+  tenant User @relation("TenantContracts", fields: [tenantId], references: [id])
+  owner  User @relation("OwnerContracts", fields: [ownerId], references: [id])
+
+  meterReadings MeterReading[]
+  invoices      Invoice[]
+
+  @@index([roomId])
+  @@index([tenantId])
+  @@index([ownerId])
+  @@index([status])
+  @@map("contracts")
+}
+
+// ---------- 11. CHOT SO DIEN NUOC ----------
+
+model MeterReading {
+  id          Int      @id @default(autoincrement())
+  contractId  Int
+  month       Int // 1..12
+  year        Int
+  electricOld Int
+  electricNew Int
+  waterOld    Int
+  waterNew    Int
+  note        String?  @db.VarChar(255)
+  createdAt   DateTime @default(now())
+
+  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  invoice  Invoice?
+
+  @@unique([contractId, year, month])
+  @@map("meter_readings")
+}
+
+// ---------- 12. HOA DON ----------
+
+model Invoice {
+  id             Int           @id @default(autoincrement())
+  code           String        @unique @db.VarChar(30)
+  contractId     Int
+  meterReadingId Int?          @unique
+  month          Int
+  year           Int
+  rentAmount     Int
+  electricUnit   Int // don gia tai thoi diem lap hoa don
+  electricUsage  Int
+  electricAmount Int
+  waterUnit      Int
+  waterUsage     Int
+  waterAmount    Int
+  serviceAmount  Int           @default(0)
+  totalAmount    Int
+  status         InvoiceStatus @default(UNPAID)
+  dueDate        DateTime
+  paidAt         DateTime?
+  note           String?       @db.VarChar(255)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  contract     Contract      @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  meterReading MeterReading? @relation(fields: [meterReadingId], references: [id])
+
+  @@unique([contractId, year, month])
+  @@index([status])
+  @@map("invoices")
+}
