@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DUCHOME Wireframes</title>
+<style>
+:root{
+  --bg:#f4f5f7; --panel:#ffffff; --ink:#1a1d21; --muted:#6b7280;
+  --line:#c8ccd2; --fill:#e6e8eb; --accent:#3b6fd4; --accent-soft:#e3ecfb;
+  --frame:#2d3138; --note:#8a6d1f; --note-bg:#fdf6e0;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15181c; --panel:#1e2228; --ink:#e8eaed; --muted:#9aa2ad;
+    --line:#3a4049; --fill:#282d34; --accent:#6f9bf0; --accent-soft:#233047;
+    --frame:#0c0e11; --note:#d9b95c; --note-bg:#2b2617;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15181c; --panel:#1e2228; --ink:#e8eaed; --muted:#9aa2ad;
+  --line:#3a4049; --fill:#282d34; --accent:#6f9bf0; --accent-soft:#233047;
+  --frame:#0c0e11; --note:#d9b95c; --note-bg:#2b2617;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  padding:32px 16px 80px;
+}
+.wrap{max-width:1180px;margin:0 auto}
+header{margin-bottom:8px}
+h1{font-size:26px;margin:0 0 6px;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:0 0 28px;max-width:70ch}
+h2{
+  font-size:15px;text-transform:uppercase;letter-spacing:.08em;
+  margin:44px 0 4px;padding-bottom:8px;border-bottom:1px solid var(--line);
+}
+.h2note{color:var(--muted);margin:0 0 20px;font-size:13px}
+
+/* ---- luoi man hinh ---- */
+.grid{display:flex;flex-wrap:wrap;gap:26px}
+.item{width:288px}
+.cap{font-weight:600;margin:10px 0 2px;font-size:13px}
+.api{
+  color:var(--muted);font-size:11.5px;font-family:ui-monospace,Menlo,Consolas,monospace;
+  word-break:break-word;
+}
+
+/* ---- khung dien thoai ---- */
+.phone{
+  width:288px;height:588px;background:var(--frame);border-radius:26px;padding:9px;
+}
+.screen{
+  height:100%;background:var(--panel);border-radius:18px;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.statusbar{
+  height:22px;background:var(--fill);flex:none;display:flex;align-items:center;
+  justify-content:space-between;padding:0 12px;font-size:9px;color:var(--muted);
+}
+.appbar{
+  flex:none;padding:11px 12px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;
+}
+.body{flex:1;overflow:hidden;padding:12px;display:flex;flex-direction:column;gap:9px}
+.tabbar{
+  flex:none;height:46px;border-top:1px solid var(--line);display:flex;
+}
+.tabbar div{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;font-size:8.5px;color:var(--muted);
+}
+.tabbar div.on{color:var(--accent)}
+.tabbar i{width:15px;height:15px;border:1.5px solid currentColor;border-radius:4px;display:block}
+
+/* ---- khung web ---- */
+.desktop{width:566px}
+.browser{background:var(--frame);border-radius:10px;padding:7px}
+.dots{display:flex;gap:5px;padding:0 3px 7px}
+.dots span{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.win{background:var(--panel);border-radius:6px;height:352px;display:flex;overflow:hidden}
+.side{
+  width:118px;flex:none;border-right:1px solid var(--line);padding:10px 8px;
+  display:flex;flex-direction:column;gap:5px;
+}
+.side .brand{font-weight:700;font-size:12px;margin-bottom:6px;color:var(--accent)}
+.nav{font-size:10px;padding:5px 7px;border-radius:5px;color:var(--muted)}
+.nav.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.main{flex:1;padding:12px;display:flex;flex-direction:column;gap:9px;overflow:hidden}
+.desktop .cap{font-size:13px}
+
+/* ---- khoi wireframe ---- */
+.box{background:var(--fill);border-radius:5px}
+.ln{height:8px;background:var(--fill);border-radius:3px}
+.ln.w80{width:80%} .ln.w60{width:60%} .ln.w40{width:40%} .ln.w25{width:25%}
+.ttl{height:11px;background:var(--line);border-radius:3px;width:55%}
+.img{
+  background:var(--fill);border:1px dashed var(--line);border-radius:5px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--muted);font-size:9px;
+}
+.input{
+  height:28px;border:1px solid var(--line);border-radius:5px;background:transparent;
+  display:flex;align-items:center;padding:0 8px;color:var(--muted);font-size:10px;
+}
+.btn{
+  height:30px;border-radius:5px;background:var(--accent);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;
+}
+.btn.ghost{background:transparent;border:1px solid var(--accent);color:var(--accent)}
+.btn.sm{height:24px;font-size:10px;padding:0 10px}
+.card{
+  border:1px solid var(--line);border-radius:6px;padding:8px;
+  display:flex;flex-direction:column;gap:6px;
+}
+.row{display:flex;gap:7px;align-items:center}
+.row.sb{justify-content:space-between}
+.col{display:flex;flex-direction:column;gap:5px;flex:1;min-width:0}
+.chip{
+  font-size:9px;padding:2.5px 7px;border-radius:99px;border:1px solid var(--line);
+  color:var(--muted);white-space:nowrap;
+}
+.chip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.badge{font-size:8.5px;padding:2px 6px;border-radius:4px;background:var(--fill);color:var(--muted)}
+.price{font-size:12px;font-weight:700;color:var(--accent)}
+.lbl{font-size:9.5px;color:var(--muted)}
+.big{font-size:19px;font-weight:700}
+.stat{border:1px solid var(--line);border-radius:6px;padding:8px;flex:1;min-width:0}
+.tbl{display:flex;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.tr{display:flex;gap:8px;padding:7px 9px;border-bottom:1px solid var(--line);align-items:center}
+.tr:last-child{border-bottom:none}
+.tr.hd{background:var(--fill)}
+.tr>div{flex:1;min-width:0}
+.chart{
+  flex:1;border:1px dashed var(--line);border-radius:6px;display:flex;
+  align-items:flex-end;gap:5px;padding:9px;min-height:74px;
+}
+.bar{flex:1;background:var(--accent);opacity:.65;border-radius:2px 2px 0 0}
+
+.note{
+  background:var(--note-bg);border-left:3px solid var(--note);color:var(--ink);
+  padding:12px 14px;border-radius:0 6px 6px 0;margin:22px 0;font-size:13px;
+}
+.note b{color:var(--note)}
+footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+@media (max-width:640px){
+  body{padding:20px 12px 60px}
+  .item,.phone{width:100%;max-width:300px}
+  .desktop{width:100%}
+  .win{height:auto;min-height:320px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>DUCHOME — Wireframe các màn hình chính</h1>
+  <p class="sub">
+    Khung bố cục mức thấp, cố ý bỏ màu sắc và hình ảnh thật để tập trung vào cấu trúc thông tin
+    và luồng thao tác. Dùng làm bản nháp khi dựng giao diện trong Figma. Mỗi màn hình có ghi
+    endpoint tương ứng trong <code>docs/api.md</code>.
+  </p>
+</header>
+
+<div class="note">
+  <b>Lưu ý.</b> TENANT và OWNER dùng chung một ứng dụng React Native, phân luồng bằng
+  <code>role</code> ngay sau khi đăng nhập. Hai nhóm màn hình dưới đây nằm trong cùng một app,
+  không phải hai app riêng biệt.
+</div>
+
+<!-- ================= TENANT ================= -->
+<h2>A · Khách thuê (TENANT) — Mobile</h2>
+<p class="h2note">Luồng chính: tìm phòng → xem chi tiết → gửi yêu cầu thuê → theo dõi hợp đồng và hóa đơn.</p>
+
+<div class="grid">
+
+  <!-- A1 dang nhap -->
+  <div class="item">
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>▪ ▪ ▪</span></div>
+      <div class="body" style="justify-content:center;gap:13px;padding:22px">
+        <div class="img" style="height:62px;width:62px;border-radius:14px;margin:0 auto 6px">logo</div>
+        <div class="ttl" style="width:64%;margin:0 auto 10px"></div>
+        <div class="lbl">Email</div>
+        <div class="input">email@example.com</div>
+        <div class="lbl">Mật khẩu</div>
+        <div class="input">••••••••</div>
+        <div class="btn" style="margin-top:8px">Đăng nhập</div>
+        <div class="btn ghost">Tạo tài khoản mới</div>
+        <div class="lbl" style="text-align:center;margin-top:6px">Quên mật khẩu?</div>
+      </div>
+    </div></div>
+    <p class="cap">A1 · Đăng nhập</p>
+    <p class="api">POST /auth/login · POST /auth/register</p>
+  </div>
+
+  <!-- A2 tim kiem -->
+  <div class="item">
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>▪ ▪ ▪</span></div>
+      <div class="appbar"><div class="box" style="width:18px;height:18px"></div>Tìm phòng trọ</div>
+      <div class="body">
+        <div class="input">🔍 Nhập khu vực, tên đường…</div>
+        <div class="row" style="overflow:hidden">
+          <span class="chip on">Tất cả</span><span class="chip">Dưới 2tr</span><span class="chip">2–4tr</span>
+        </div>
+        <div class="card">
+          <div class="img" style="height:58px">ảnh phòng</div>
+          <div class="ttl"></div>
+          <div class="ln w80"></div>
+          <div class="row sb"><span class="price">2.500.000đ</span><span class="badge">25m²</span></div>
+        </div>
+        <div class="card">
+          <div class="img" style="height:58px">ảnh phòng</div>
+          <div class="ttl"></div>
+          <div class="ln w60"></div>
+          <div class="row sb"><span class="price">3.200.000đ</span><span class="badge">30m²</span></div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div class="on"><i></i>Tìm</div><div><i></i>Yêu cầu</div>
+        <div><i></i>Hóa đơn</div><div><i></i>Tôi</div>
+      </div>
+    </div></div>
+    <p class="cap">A2 · Trang chủ, tìm kiếm</p>
+    <p class="api">GET /search/posts?keyword=&amp;page=</p>
+  </div>
+
+  <!-- A3 bo loc -->
+  <div class="item">
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>▪ ▪ ▪</span></div>
+      <div class="appbar"><div class="box" style="width:18px;height:18px"></div>Bộ lọc</div>
+      <div class="body">
+        <div class="lbl">Khu vực</div>
+        <div class="input">Chọn Tỉnh / Quận / Phường ▾</div>
+        <div class="lbl" style="margin-top:4px">Khoảng giá</div>
+        <div class="row"><div class="input col">Từ</div><div class="input col">Đến</div></div>
+        <div class="lbl" style="margin-top:4px">Diện tích</div>
+        <div class="row"><div class="input col">Từ m²</div><div class="input col">Đến m²</div></div>
+        <div class="lbl" style="margin-top:4px">Tiện ích</div>
+        <div class="row" style="flex-wrap:wrap;gap:5px">
+          <span class="chip on">Wifi</span><span class="chip on">Máy lạnh</span>
+          <span class="chip">Gác lửng</span><span class="chip">Ban công</span>
+          <span class="chip">Để xe</span>
+        </div>
+        <div style="flex:1"></div>
+        <div class="row"><div class="btn ghost col">Xóa lọc</div><div class="btn col">Áp dụng</div></div>
+      </div>
+    </div></div>
+    <p class="cap">A3 · Bộ lọc tìm kiếm</p>
+    <p class="api">GET /amenities · GET /search/posts?minPrice=&amp;amenityIds=</p>
+  </div>
+
+  <!-- A4 chi tiet phong -->
+  <div class="item">
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>▪ ▪ ▪</span></div>
+      <div class="body" style="padding:0;gap:0">
+        <div class="img" style="height:136px;border-radius:0;border-left:none;border-right:none;border-top:none">
+          ảnh bìa · vuốt ngang
+        </div>
+        <div style="padding:12px;display:flex;flex-direction:column;gap:9px;flex:1">
+          <div class="ttl" style="width:82%"></div>
+          <div class="row sb"><span class="price">2.500.000đ / tháng</span><span class="badge">Còn trống</span></div>
+          <div class="row"><span class="badge">25m²</span><span class="badge">2 người</span><span class="badge">Cọc 1 tháng</span></div>
+          <div class="ln w80"></div><div class="ln w60"></div>
+          <div class="lbl" style="margin-top:3px">Tiện ích</div>
+          <div class="row" style="flex-wrap:wrap;gap:5px">
+            <span class="chip">Wifi</span><span class="chip">Máy lạnh</span><span class="chip">Gác lửng</span>
+          </div>
+          <div class="card" style="margin-top:3px">
+            <div class="row"><div class="img" style="width:28px;height:28px;border-radius:50%">👤</div>
+              <div class="col"><div class="ln w60"></div><div class="lbl">Chủ trọ</div></div></div>
+          </div>
+        </div>
+        <div style="padding:10px 12px;border-top:1px solid var(--line)"><div class="btn">Gửi yêu cầu thuê</div></div>
+      </div>
+    </div></div>
+    <p class="cap">A4 · Chi tiết phòng</p>
+    <p class="api">GET /search/posts/:id</p>
+  </div>
+
+  <!-- A5 yeu cau thue -->
+  <div class="item">
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>▪ ▪ ▪</span></div>
+      <div class="appbar">Yêu cầu thuê của tôi</div>
+      <div class="body">
+        <div class="row"><span class="chip on">Tất cả</span><span class="chip">Chờ</span><span class="chip">Đã duyệt</span></div>
+        <div class="card">
+          <div class="row sb"><div class="ttl" style="width:52%"></div><span class="chip on">Chờ duyệt</span></div>
+          <div class="ln w60"></div>
+          <div class="lbl">Gửi ngày 18/09/2026</div>
+          <div class="btn ghost sm" style="align-self:flex-start">Hủy yêu cầu</div>
+        </div>
+        <div class="card">
+          <div class="row sb"><div class="ttl" style="width:52%"></div><span class="badge">Đã duyệt</span></div>
+          <div class="ln w60"></div>
+          <div class="lbl">Chủ trọ: mời bạn qua xem phòng…</div>
+        </div>
+        <div class="card">
+          <div class="row sb"><div class="ttl" style="width:52%"></div><span class="badge">Từ chối</span></div>
+          <div class="ln w40"></div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div><i></i>Tìm</div><div class="on"><i></i>Yêu cầu</div>
+        <div><i></i>Hóa đơn</div><div><i></i>Tôi</div>
+      </div>
+    </div></div>
+    <p class="cap">A5 · Theo dõi yêu cầu thuê</p>
+    <p class="api">GET /rental-requests/my · PUT /rental-requests/:id/cancel</p>
+  </div>
+
+  <!-- A6 hoa don -->
+  <div class="item">
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>▪ ▪ ▪</span></div>
+      <div class="appbar">Hóa đơn của tôi</div>
+      <div class="body">
+        <div class="card" style="border-color:var(--accent)">
+          <div class="row sb"><span class="lbl">Tháng 9/2026</span><span class="chip on">Chưa trả</span></div>
+          <div class="big">3.150.000đ</div>
+          <div class="lbl">Hạn trả: 05/10/2026</div>
+          <div class="row sb"><span class="lbl">Tiền phòng</span><span class="lbl">2.500.000đ</span></div>
+          <div class="row sb"><span class="lbl">Điện · 85 kWh</span><span class="lbl">297.500đ</span></div>
+          <div class="row sb"><span class="lbl">Nước · 7 m³</span><span class="lbl">105.000đ</span></div>
+          <div class="row sb"><span class="lbl">Dịch vụ</span><span class="lbl">247.500đ</span></div>
+        </div>
+        <div class="card">
+          <div class="row sb"><span class="lbl">Tháng 8/2026</span><span class="badge">Đã trả</span></div>
+          <div class="row sb"><span class="price">2.980.000đ</span><span class="lbl">05/09</span></div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div><i></i>Tìm</div><div><i></i>Yêu cầu</div>
+        <div class="on"><i></i>Hóa đơn</div><div><i></i>Tôi</div>
+      </div>
+    </div></div>
+    <p class="cap">A6 · Hóa đơn</p>
+    <p class="api">GET /invoices/my · GET /invoices/:id</p>
+  </div>
+
+  <!-- A7 ho so -->
+  <div class="item">
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>▪ ▪ ▪</span></div>
+      <div class="appbar">Hồ sơ</div>
+      <div class="body">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:7px;padding:8px 0">
+          <div class="img" style="width:62px;height:62px;border-radius:50%">ảnh</div>
+          <div class="ttl" style="width:44%"></div><div class="lbl">TENANT</div>
+        </div>
+        <div class="card"><div class="row sb"><span class="lbl">Hợp đồng của tôi</span><span class="lbl">›</span></div></div>
+        <div class="card"><div class="row sb"><span class="lbl">Sửa thông tin cá nhân</span><span class="lbl">›</span></div></div>
+        <div class="card"><div class="row sb"><span class="lbl">Đổi mật khẩu</span><span class="lbl">›</span></div></div>
+        <div style="flex:1"></div>
+        <div class="btn ghost">Đăng xuất</div>
+      </div>
+      <div class="tabbar">
+        <div><i></i>Tìm</div><div><i></i>Yêu cầu</div>
+        <div><i></i>Hóa đơn</div><div class="on"><i></i>Tôi</div>
+      </div>
+    </div></div>
+    <p class="cap">A7 · Hồ sơ cá nhân</p>
+    <p class="api">GET /auth/me · PUT /auth/me · PUT /auth/change-password · GET /contracts/my</p>
+  </div>
+
+</div>
+
+<!-- ================= OWNER ================= -->
+<h2>B · Chủ trọ (OWNER) — Mobile</h2>
+<p class="h2note">Luồng chính: đăng phòng → duyệt yêu cầu thuê → tạo hợp đồng → chốt điện nước hằng tháng → phát hành hóa đơn.</p>
+
+<div class="grid">
+
+  <!-- B1 dashboard -->
+  <div class="item">
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>▪ ▪ ▪</span></div>
+      <div class="appbar">Xin chào, chủ trọ</div>
+      <div class="body">
+        <div class="row">
+          <div class="stat"><div class="lbl">Tổng phòng</div><div class="big">12</div></div>
+          <div class="stat"><div class="lbl">Đang thuê</div><div class="big">9</div></div>
+        </div>
+        <div class="row">
+          <div class="stat"><div class="lbl">Còn trống</div><div class="big">3</div></div>
+          <div class="stat"><div class="lbl">Chưa thu</div><div class="big">4</div></div>
+        </div>
+        <div class="card" style="border-color:var(--accent)">
+          <div class="row sb"><span class="lbl">Yêu cầu thuê mới</span><span class="chip on">2 chờ xử lý</span></div>
+        </div>
+        <div class="lbl" style="margin-top:3px">Doanh thu tháng này</div>
+        <div class="big" style="color:var(--accent)">28.400.000đ</div>
+        <div class="row" style="margin-top:4px">
+          <div class="btn col sm">+ Thêm phòng</div><div class="btn ghost col sm">Nhập điện nước</div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div class="on"><i></i>Tổng quan</div><div><i></i>Phòng</div>
+        <div><i></i>Hóa đơn</div><div><i></i>Tôi</div>
+      </div>
+    </div></div>
+    <p class="cap">B1 · Tổng quan</p>
+    <p class="api">GET /stats/owner</p>
+  </div>
+
+  <!-- B2 danh sach phong -->
+  <div class="item">
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>▪ ▪ ▪</span></div>
+      <div class="appbar">Phòng của tôi</div>
+      <div class="body">
+        <div class="input">Nhà trọ Đức Home 1 ▾</div>
+        <div class="row"><span class="chip on">Tất cả</span><span class="chip">Trống</span><span class="chip">Đang thuê</span></div>
+        <div class="card">
+          <div class="row">
+            <div class="img" style="width:50px;height:44px">ảnh</div>
+            <div class="col"><div class="ttl" style="width:38%"></div>
+              <div class="price">2.500.000đ</div><span class="badge">Đang thuê · 25m²</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="row">
+            <div class="img" style="width:50px;height:44px">ảnh</div>
+            <div class="col"><div class="ttl" style="width:38%"></div>
+              <div class="price">3.200.000đ</div><span class="chip on">Còn trống</span></div>
+          </div>
+        </div>
+        <div class="btn" style="margin-top:auto">+ Thêm phòng mới</div>
+      </div>
+      <div class="tabbar">
+        <div><i></i>Tổng quan</div><div class="on"><i></i>Phòng</div>
+        <div><i></i>Hóa đơn</div><div><i></i>Tôi</div>
+      </div>
+    </div></div>
+    <p class="cap">B2 · Danh sách phòng</p>
+    <p class="api">GET /properties · GET /rooms?propertyId=&amp;status=</p>
+  </div>
+
+  <!-- B3 them phong -->
+  <div class="item">
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>▪ ▪ ▪</span></div>
+      <div class="appbar"><div class="box" style="width:18px;height:18px"></div>Thêm phòng</div>
+      <div class="body">
+        <div class="lbl">Ảnh phòng · tối đa 10</div>
+        <div class="row">
+          <div class="img" style="width:52px;height:50px">+</div>
+          <div class="img" style="width:52px;height:50px">ảnh</div>
+          <div class="img" style="width:52px;height:50px">ảnh</div>
+        </div>
+        <div class="row"><div class="col"><div class="lbl">Mã phòng</div><div class="input">P101</div></div>
+          <div class="col"><div class="lbl">Diện tích</div><div class="input">25 m²</div></div></div>
+        <div class="lbl">Giá thuê / tháng</div><div class="input">2.500.000đ</div>
+        <div class="row"><div class="col"><div class="lbl">Tiền cọc</div><div class="input">2.500.000đ</div></div>
+          <div class="col"><div class="lbl">Số người</div><div class="input">2</div></div></div>
+        <div class="lbl">Tiện ích</div>
+        <div class="row" style="flex-wrap:wrap;gap:5px">
+          <span class="chip on">Wifi</span><span class="chip on">Máy lạnh</span><span class="chip">Gác lửng</span>
+        </div>
+        <div class="btn" style="margin-top:auto">Lưu phòng</div>
+      </div>
+    </div></div>
+    <p class="cap">B3 · Thêm / sửa phòng</p>
+    <p class="api">POST /rooms · POST /rooms/:id/images · PUT /rooms/:id/amenities</p>
+  </div>
+
+  <!-- B4 xu ly yeu cau -->
+  <div class="item">
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>▪ ▪ ▪</span></div>
+      <div class="appbar">Yêu cầu thuê</div>
+      <div class="body">
+        <div class="row"><span class="chip on">Chờ xử lý 2</span><span class="chip">Đã duyệt</span></div>
+        <div class="card" style="border-color:var(--accent)">
+          <div class="row">
+            <div class="img" style="width:30px;height:30px;border-radius:50%">👤</div>
+            <div class="col"><div class="ln w60"></div><div class="lbl">0912 345 678</div></div>
+          </div>
+          <div class="row sb"><span class="lbl">Phòng P101</span><span class="lbl">18/09</span></div>
+          <div class="ln w80"></div>
+          <div class="lbl">Dự kiến vào: 01/10/2026</div>
+          <div class="row"><div class="btn ghost col sm">Từ chối</div><div class="btn col sm">Chấp nhận</div></div>
+        </div>
+        <div class="card">
+          <div class="row">
+            <div class="img" style="width:30px;height:30px;border-radius:50%">👤</div>
+            <div class="col"><div class="ln w60"></div><div class="lbl">Phòng P205</div></div>
+          </div>
+          <div class="row"><div class="btn ghost col sm">Từ chối</div><div class="btn col sm">Chấp nhận</div></div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div><i></i>Tổng quan</div><div><i></i>Phòng</div>
+        <div><i></i>Hóa đơn</div><div><i></i>Tôi</div>
+      </div>
+    </div></div>
+    <p class="cap">B4 · Xử lý yêu cầu thuê</p>
+    <p class="api">GET /rental-requests/received · PUT /rental-requests/:id/approve · /reject</p>
+  </div>
+
+  <!-- B5 nhap dien nuoc -->
+  <div class="item">
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>▪ ▪ ▪</span></div>
+      <div class="appbar"><div class="box" style="width:18px;height:18px"></div>Chốt số tháng 9/2026</div>
+      <div class="body">
+        <div class="input">Phòng P101 · Lê Minh Đức ▾</div>
+        <div class="card">
+          <div class="lbl">ĐIỆN (kWh)</div>
+          <div class="row">
+            <div class="col"><div class="lbl">Chỉ số cũ</div><div class="input" style="opacity:.6">1200</div></div>
+            <div class="col"><div class="lbl">Chỉ số mới</div><div class="input">1285</div></div>
+          </div>
+          <div class="row sb"><span class="lbl">Tiêu thụ 85 kWh</span><span class="price">297.500đ</span></div>
+        </div>
+        <div class="card">
+          <div class="lbl">NƯỚC (m³)</div>
+          <div class="row">
+            <div class="col"><div class="lbl">Chỉ số cũ</div><div class="input" style="opacity:.6">45</div></div>
+            <div class="col"><div class="lbl">Chỉ số mới</div><div class="input">52</div></div>
+          </div>
+          <div class="row sb"><span class="lbl">Tiêu thụ 7 m³</span><span class="price">105.000đ</span></div>
+        </div>
+        <div class="btn" style="margin-top:auto">Lưu và tạo hóa đơn</div>
+      </div>
+    </div></div>
+    <p class="cap">B5 · Nhập điện nước</p>
+    <p class="api">POST /meter-readings · POST /invoices/generate</p>
+  </div>
+
+  <!-- B6 hoa don owner -->
+  <div class="item">
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>▪ ▪ ▪</span></div>
+      <div class="appbar">Quản lý hóa đơn</div>
+      <div class="body">
+        <div class="input">Tháng 9/2026 ▾</div>
+        <div class="row"><span class="chip on">Chưa thu 4</span><span class="chip">Đã thu 5</span></div>
+        <div class="card">
+          <div class="row sb"><div class="ttl" style="width:44%"></div><span class="chip on">Chưa trả</span></div>
+          <div class="row sb"><span class="price">3.150.000đ</span><span class="lbl">Hạn 05/10</span></div>
+          <div class="btn sm" style="align-self:flex-start">Đánh dấu đã thu</div>
+        </div>
+        <div class="card">
+          <div class="row sb"><div class="ttl" style="width:44%"></div><span class="badge">Đã trả</span></div>
+          <div class="row sb"><span class="price">2.890.000đ</span><span class="lbl">02/10</span></div>
+        </div>
+        <div class="card">
+          <div class="row sb"><div class="ttl" style="width:44%"></div><span class="chip on">Quá hạn</span></div>
+          <div class="row sb"><span class="price">3.020.000đ</span><span class="lbl">Trễ 3 ngày</span></div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div><i></i>Tổng quan</div><div><i></i>Phòng</div>
+        <div class="on"><i></i>Hóa đơn</div><div><i></i>Tôi</div>
+      </div>
+    </div></div>
+    <p class="cap">B6 · Quản lý hóa đơn</p>
+    <p class="api">GET /invoices?month=&amp;status= · PUT /invoices/:id/pay</p>
+  </div>
+
+  <!-- B7 thong ke -->
+  <div class="item">
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>▪ ▪ ▪</span></div>
+      <div class="appbar">Thống kê</div>
+      <div class="body">
+        <div class="lbl">Doanh thu 6 tháng gần nhất</div>
+        <div class="chart">
+          <div class="bar" style="height:44%"></div><div class="bar" style="height:58%"></div>
+          <div class="bar" style="height:51%"></div><div class="bar" style="height:72%"></div>
+          <div class="bar" style="height:66%"></div><div class="bar" style="height:88%"></div>
+        </div>
+        <div class="row">
+          <div class="stat"><div class="lbl">Tỷ lệ lấp đầy</div><div class="big">75%</div></div>
+          <div class="stat"><div class="lbl">TB / phòng</div><div class="big">3.1tr</div></div>
+        </div>
+        <div class="card">
+          <div class="row sb"><span class="lbl">Đã thu tháng này</span><span class="price">22.100.000đ</span></div>
+          <div class="row sb"><span class="lbl">Còn phải thu</span><span class="price">6.300.000đ</span></div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div><i></i>Tổng quan</div><div><i></i>Phòng</div>
+        <div><i></i>Hóa đơn</div><div class="on"><i></i>Tôi</div>
+      </div>
+    </div></div>
+    <p class="cap">B7 · Thống kê doanh thu</p>
+    <p class="api">GET /stats/owner/revenue</p>
+  </div>
+
+</div>
+
+<!-- ================= ADMIN ================= -->
+<h2>C · Quản trị viên (ADMIN) — Web</h2>
+<p class="h2note">Bố cục cố định: thanh điều hướng bên trái, vùng nội dung bên phải. Màn hình đăng nhập đã dựng xong ở tuần 1.</p>
+
+<div class="grid">
+
+  <!-- C1 dashboard -->
+  <div class="item desktop">
+    <div class="browser">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <div class="win">
+        <div class="side">
+          <div class="brand">DUCHOME</div>
+          <div class="nav on">Tổng quan</div><div class="nav">Tài khoản</div>
+          <div class="nav">Phòng</div><div class="nav">Tin đăng</div>
+          <div class="nav">Hợp đồng</div><div class="nav">Hóa đơn</div>
+        </div>
+        <div class="main">
+          <div class="ttl" style="width:30%"></div>
+          <div class="row">
+            <div class="stat"><div class="lbl">Người dùng</div><div class="big">248</div></div>
+            <div class="stat"><div class="lbl">Chủ trọ</div><div class="big">37</div></div>
+            <div class="stat"><div class="lbl">Phòng</div><div class="big">412</div></div>
+            <div class="stat"><div class="lbl">Chờ duyệt</div><div class="big" style="color:var(--accent)">8</div></div>
+          </div>
+          <div class="row" style="flex:1;align-items:stretch">
+            <div class="col" style="flex:1.4">
+              <div class="lbl">Tin đăng theo tháng</div>
+              <div class="chart">
+                <div class="bar" style="height:40%"></div><div class="bar" style="height:62%"></div>
+                <div class="bar" style="height:48%"></div><div class="bar" style="height:78%"></div>
+                <div class="bar" style="height:70%"></div><div class="bar" style="height:92%"></div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="lbl">Hoạt động gần đây</div>
+              <div class="card" style="flex:1;gap:7px">
+                <div class="ln w80"></div><div class="ln w60"></div>
+                <div class="ln w80"></div><div class="ln w40"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="cap">C1 · Tổng quan hệ thống</p>
+    <p class="api">GET /stats/admin</p>
+  </div>
+
+  <!-- C2 tai khoan -->
+  <div class="item desktop">
+    <div class="browser">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <div class="win">
+        <div class="side">
+          <div class="brand">DUCHOME</div>
+          <div class="nav">Tổng quan</div><div class="nav on">Tài khoản</div>
+          <div class="nav">Phòng</div><div class="nav">Tin đăng</div>
+          <div class="nav">Hợp đồng</div><div class="nav">Hóa đơn</div>
+        </div>
+        <div class="main">
+          <div class="row sb"><div class="ttl" style="width:26%"></div><div class="btn sm" style="width:92px">Xuất Excel</div></div>
+          <div class="row">
+            <div class="input col">🔍 Tìm theo tên, email…</div>
+            <div class="input" style="width:88px">Vai trò ▾</div>
+            <div class="input" style="width:88px">Trạng thái ▾</div>
+          </div>
+          <div class="tbl">
+            <div class="tr hd"><div class="lbl">Họ tên</div><div class="lbl">Email</div>
+              <div class="lbl" style="flex:.5">Vai trò</div><div class="lbl" style="flex:.6">Trạng thái</div>
+              <div class="lbl" style="flex:.5">Thao tác</div></div>
+            <div class="tr"><div class="ln w80"></div><div class="ln w80"></div>
+              <div style="flex:.5"><span class="badge">OWNER</span></div>
+              <div style="flex:.6"><span class="chip on">Hoạt động</span></div>
+              <div style="flex:.5"><span class="lbl">Khóa</span></div></div>
+            <div class="tr"><div class="ln w60"></div><div class="ln w80"></div>
+              <div style="flex:.5"><span class="badge">TENANT</span></div>
+              <div style="flex:.6"><span class="chip on">Hoạt động</span></div>
+              <div style="flex:.5"><span class="lbl">Khóa</span></div></div>
+            <div class="tr"><div class="ln w80"></div><div class="ln w60"></div>
+              <div style="flex:.5"><span class="badge">TENANT</span></div>
+              <div style="flex:.6"><span class="badge">Đã khóa</span></div>
+              <div style="flex:.5"><span class="lbl">Mở</span></div></div>
+          </div>
+          <div class="row sb" style="margin-top:auto"><span class="lbl">Hiển thị 1–10 của 248</span>
+            <div class="row"><span class="chip">‹</span><span class="chip on">1</span>
+              <span class="chip">2</span><span class="chip">3</span><span class="chip">›</span></div></div>
+        </div>
+      </div>
+    </div>
+    <p class="cap">C2 · Quản lý tài khoản</p>
+    <p class="api">GET /admin/users?role=&amp;status= · PUT /admin/users/:id/lock · /unlock</p>
+  </div>
+
+  <!-- C3 duyet tin -->
+  <div class="item desktop">
+    <div class="browser">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <div class="win">
+        <div class="side">
+          <div class="brand">DUCHOME</div>
+          <div class="nav">Tổng quan</div><div class="nav">Tài khoản</div>
+          <div class="nav">Phòng</div><div class="nav on">Tin đăng</div>
+          <div class="nav">Hợp đồng</div><div class="nav">Hóa đơn</div>
+        </div>
+        <div class="main">
+          <div class="row"><span class="chip on">Chờ duyệt 8</span><span class="chip">Đã duyệt</span><span class="chip">Từ chối</span></div>
+          <div class="row" style="flex:1;align-items:stretch">
+            <div class="col" style="flex:.9">
+              <div class="card" style="border-color:var(--accent)">
+                <div class="row"><div class="img" style="width:44px;height:36px">ảnh</div>
+                  <div class="col"><div class="ln w80"></div><div class="lbl">owner1 · 19/09</div></div></div>
+              </div>
+              <div class="card"><div class="row"><div class="img" style="width:44px;height:36px">ảnh</div>
+                <div class="col"><div class="ln w60"></div><div class="lbl">owner2 · 19/09</div></div></div></div>
+              <div class="card"><div class="row"><div class="img" style="width:44px;height:36px">ảnh</div>
+                <div class="col"><div class="ln w80"></div><div class="lbl">owner1 · 18/09</div></div></div></div>
+            </div>
+            <div class="col" style="flex:1.1">
+              <div class="lbl">Xem trước tin đăng</div>
+              <div class="card" style="flex:1">
+                <div class="img" style="height:56px">ảnh phòng</div>
+                <div class="ttl" style="width:74%"></div>
+                <div class="row"><span class="price">2.500.000đ</span><span class="badge">25m²</span></div>
+                <div class="ln w80"></div><div class="ln w60"></div>
+                <div class="row" style="margin-top:auto">
+                  <div class="btn ghost col sm">Từ chối</div><div class="btn col sm">Duyệt đăng</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="cap">C3 · Duyệt tin đăng</p>
+    <p class="api">GET /posts/pending · PUT /posts/:id/approve · PUT /posts/:id/reject</p>
+  </div>
+
+  <!-- C4 hop dong -->
+  <div class="item desktop">
+    <div class="browser">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <div class="win">
+        <div class="side">
+          <div class="brand">DUCHOME</div>
+          <div class="nav">Tổng quan</div><div class="nav">Tài khoản</div>
+          <div class="nav">Phòng</div><div class="nav">Tin đăng</div>
+          <div class="nav on">Hợp đồng</div><div class="nav">Hóa đơn</div>
+        </div>
+        <div class="main">
+          <div class="ttl" style="width:28%"></div>
+          <div class="row">
+            <div class="input col">🔍 Mã hợp đồng, tên khách…</div>
+            <div class="input" style="width:98px">Trạng thái ▾</div>
+          </div>
+          <div class="tbl">
+            <div class="tr hd"><div class="lbl" style="flex:.6">Mã</div><div class="lbl">Phòng</div>
+              <div class="lbl">Khách thuê</div><div class="lbl" style="flex:.8">Thời hạn</div>
+              <div class="lbl" style="flex:.6">Trạng thái</div></div>
+            <div class="tr"><div style="flex:.6"><div class="ln w80"></div></div><div class="ln w60"></div>
+              <div class="ln w80"></div><div style="flex:.8"><div class="ln w80"></div></div>
+              <div style="flex:.6"><span class="chip on">Hiệu lực</span></div></div>
+            <div class="tr"><div style="flex:.6"><div class="ln w80"></div></div><div class="ln w60"></div>
+              <div class="ln w60"></div><div style="flex:.8"><div class="ln w80"></div></div>
+              <div style="flex:.6"><span class="chip on">Hiệu lực</span></div></div>
+            <div class="tr"><div style="flex:.6"><div class="ln w80"></div></div><div class="ln w60"></div>
+              <div class="ln w80"></div><div style="flex:.8"><div class="ln w60"></div></div>
+              <div style="flex:.6"><span class="badge">Đã kết thúc</span></div></div>
+            <div class="tr"><div style="flex:.6"><div class="ln w80"></div></div><div class="ln w60"></div>
+              <div class="ln w60"></div><div style="flex:.8"><div class="ln w80"></div></div>
+              <div style="flex:.6"><span class="badge">Chấm dứt</span></div></div>
+          </div>
+          <div class="row sb" style="margin-top:auto"><span class="lbl">Hiển thị 1–10 của 126</span>
+            <div class="row"><span class="chip">‹</span><span class="chip on">1</span>
+              <span class="chip">2</span><span class="chip">›</span></div></div>
+        </div>
+      </div>
+    </div>
+    <p class="cap">C4 · Quản lý hợp đồng</p>
+    <p class="api">GET /contracts (quyền ADMIN xem toàn hệ thống)</p>
+  </div>
+
+</div>
+
+<div class="note">
+  <b>Khi dựng lại trong Figma.</b> Khung điện thoại ở đây rộng 288px, tương ứng khổ
+  <b>375 × 812</b> của iPhone X — khổ nên chọn làm frame trong Figma. Màn hình web dựng theo
+  bố cục <b>1280 × 800</b>, thanh điều hướng trái rộng 240px.
+</div>
+
+<footer>
+  DUCHOME · Wireframe tuần 1 · Đối chiếu endpoint tại <code>docs/api.md</code>, cấu trúc dữ liệu tại <code>docs/erd.md</code>
+</footer>
+
+</div>
+</body>
+</html>
