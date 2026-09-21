@@ -1,0 +1,640 @@
+{
+  "info": {
+    "name": "DucHome - Authentication",
+    "description": "Kiem thu xac thuc va phan quyen DucHome. Chay backend (npm run dev) truoc. Chay tung thu muc theo thu tu 1 -> 4, hoac bam Run collection.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000/api"
+    },
+    {
+      "key": "password",
+      "value": "123456"
+    },
+    {
+      "key": "tenantToken",
+      "value": ""
+    },
+    {
+      "key": "ownerToken",
+      "value": ""
+    },
+    {
+      "key": "adminToken",
+      "value": ""
+    },
+    {
+      "key": "newUserToken",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Dang ky",
+      "item": [
+        {
+          "name": "Dang ky TENANT moi (201)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"postman{{$timestamp}}@duchome.vn\",\n  \"password\": \"{{password}}\",\n  \"fullName\": \"Nguoi Dung Postman\",\n  \"role\": \"TENANT\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/register"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Co token, khong lo mat khau', () => { const d = pm.response.json().data; pm.expect(d.token).to.be.a('string'); pm.expect(d.user).to.not.have.property('password'); });",
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('newUserToken', pm.response.json().data.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Dang ky role ADMIN bi chan (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"hacker{{$timestamp}}@duchome.vn\",\n  \"password\": \"{{password}}\",\n  \"fullName\": \"Gia Mao Admin\",\n  \"role\": \"ADMIN\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/register"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Dang ky trung email (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tenant1@duchome.vn\",\n  \"password\": \"{{password}}\",\n  \"fullName\": \"Trung Email\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/register"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 409', () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Dang ky du lieu sai (400, loi tung truong)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"khong-phai-email\",\n  \"password\": \"12\",\n  \"fullName\": \"A\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/register"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Co danh sach loi theo field', () => pm.expect(pm.response.json().errors.length).to.be.at.least(3));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Dang nhap",
+      "item": [
+        {
+          "name": "Dang nhap TENANT (luu tenantToken)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tenant1@duchome.vn\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('tenantToken', pm.response.json().data.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Dang nhap OWNER (luu ownerToken)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"owner1@duchome.vn\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('ownerToken', pm.response.json().data.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Dang nhap ADMIN (luu adminToken)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@duchome.vn\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 200', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('adminToken', pm.response.json().data.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sai mat khau (401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tenant1@duchome.vn\",\n  \"password\": \"sai-mat-khau\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /auth/me voi tenantToken (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tenantToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/me"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Dung role TENANT', () => pm.expect(pm.response.json().data.role).to.eql('TENANT'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /auth/me khong token (401)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/auth/me"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Phan quyen theo vai tro (ma tran 3x3)",
+      "item": [
+        {
+          "name": "TENANT -> /tenant/dashboard (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tenantToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/tenant/dashboard"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TENANT -> /owner/dashboard (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tenantToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/owner/dashboard"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TENANT -> /admin/dashboard (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tenantToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/dashboard"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "OWNER -> /tenant/dashboard (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/tenant/dashboard"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "OWNER -> /owner/dashboard (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/owner/dashboard"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "OWNER -> /admin/dashboard (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/dashboard"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ADMIN -> /tenant/dashboard (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/tenant/dashboard"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ADMIN -> /owner/dashboard (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/owner/dashboard"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ADMIN -> /admin/dashboard (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/dashboard"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Khong token -> /admin/dashboard (401)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/admin/dashboard"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Dang xuat",
+      "item": [
+        {
+          "name": "Dang xuat user vua dang ky (200)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{newUserToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/logout"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Token vua logout goi /auth/me (401)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{newUserToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/me"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Bao phien da ket thuc', () => pm.expect(pm.response.json().message).to.include('ket thuc'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Dang xuat khong token (401)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/auth/logout"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tra ve 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

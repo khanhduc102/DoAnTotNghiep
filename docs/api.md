@@ -4,7 +4,7 @@
 > Đừng gọi các endpoint ⬜ từ mobile hay admin — chúng chưa tồn tại.
 
 **Base URL:** `http://localhost:4000/api`
-**Phiên bản:** cập nhật tuần 2 (Task 2A). Xác thực dùng một JWT hạn 7 ngày, đã bỏ refresh token. 5 endpoint xác thực hoạt động, kiểm thử bằng `npm test` trong `backend/`.
+**Phiên bản:** cập nhật cuối tuần 2. Đã có 6 endpoint xác thực và 3 dashboard theo vai trò, kiểm thử tự động 41 case bằng `npm test` trong `backend/`. Hướng dẫn test bằng Postman: [`docs/testing-auth.md`](testing-auth.md).
 
 ---
 
@@ -63,7 +63,9 @@ Authorization: Bearer <token>
 
 Mỗi lần đăng ký hoặc đăng nhập, server cấp **một JWT duy nhất, hạn 7 ngày**, payload gồm `{ id, role }`. Hệ thống **không có refresh token**. Khi token hết hạn, server trả 401 kèm thông điệp *"Phien dang nhap da het han, vui long dang nhap lai"*, client xóa token và đưa người dùng về màn hình đăng nhập (web admin làm việc này trong `admin/src/api/client.js`).
 
-Mỗi request, middleware `authenticate` đọc lại user trong DB. Vì vậy tài khoản bị ADMIN khóa sẽ bị chặn 403 **ngay lập tức**, kể cả khi token của họ vẫn còn hạn.
+Mỗi request, middleware `authenticate` đọc lại user trong DB và kiểm tra hai điều:
+- `status` là `LOCKED` thì trả **403** ngay, kể cả khi token còn hạn.
+- `ver` trong token khác `users.tokenVersion` thì trả **401** *"Phien dang nhap da ket thuc"*. Đây là cơ chế giúp logout thu hồi được token (xem mục 2.3).
 
 ### 1.4. Bảng mã trạng thái
 
@@ -149,9 +151,25 @@ Lỗi: `401` sai email hoặc mật khẩu · `403` tài khoản bị khóa.
 
 > Sai mật khẩu và email không tồn tại đều trả về **cùng một thông điệp** *"Email hoac mat khau khong dung"*. Đây là chủ ý: nếu phân biệt hai trường hợp, kẻ tấn công có thể dò xem email nào đã đăng ký trong hệ thống.
 
-### 2.3. Đã bỏ: làm mới token
+### 2.3. ✅ Đăng xuất
 
-`POST /api/auth/refresh` đã bị gỡ ở tuần 2 theo spec Task 2A, gọi vào sẽ nhận 404. Hết hạn token thì đăng nhập lại.
+```
+POST /api/auth/logout
+```
+Quyền: 🔒
+
+Không cần body. Phản hồi `200`: `{ "success": true, "message": "Dang xuat thanh cong", "data": null }`
+
+**Cơ chế:** JWT bình thường không thể thu hồi vì server không lưu nó. DucHome giải quyết bằng cột `users.tokenVersion`:
+1. Khi đăng nhập, giá trị `tokenVersion` hiện tại được ghi vào token dưới tên `ver`.
+2. Logout tăng `tokenVersion` lên 1.
+3. Mọi token mang `ver` cũ đều bị `authenticate` từ chối với mã 401.
+
+Hệ quả: logout ở một thiết bị sẽ **đăng xuất tài khoản đó trên mọi thiết bị**.
+
+Lỗi: `401` không có token hoặc token đã hết hiệu lực.
+
+> Refresh token (`POST /api/auth/refresh`) đã bị gỡ ở tuần 2, gọi vào sẽ nhận 404. Token hết hạn sau 7 ngày thì người dùng đăng nhập lại.
 
 ### 2.4. ✅ Xem hồ sơ cá nhân
 
@@ -199,7 +217,74 @@ Lỗi: `400` mật khẩu hiện tại sai, hoặc mật khẩu mới trùng m�
 
 ---
 
-## 3. Nhà trọ — `/properties` ⬜ Tuần 2
+## 3. Nhóm route theo vai trò ✅ ĐÃ HOÀN THÀNH
+
+Ba nhóm route được bảo vệ ngay ở cấp nhóm bằng `router.use(authenticate, authorize(ROLE))`. Mọi route thêm vào một nhóm sẽ tự động chỉ cho đúng vai trò đó truy cập.
+
+| Nhóm | File | Vai trò được vào |
+|---|---|---|
+| `/api/tenant/*` | `backend/src/routes/tenant.route.js` | 👤 TENANT |
+| `/api/owner/*` | `backend/src/routes/owner.route.js` | 🏠 OWNER |
+| `/api/admin/*` | `backend/src/routes/admin.route.js` | ⚙️ ADMIN |
+
+Gọi sai nhóm trả **403**, không có token trả **401**.
+
+### 3.1. ✅ Tổng quan khách thuê
+
+```
+GET /api/tenant/dashboard
+```
+```json
+{
+  "data": {
+    "rentalRequests": { "PENDING": 0, "APPROVED": 0, "REJECTED": 0, "CANCELLED": 0 },
+    "activeContracts": 0,
+    "unpaidInvoices": 0
+  }
+}
+```
+
+### 3.2. ✅ Tổng quan chủ trọ
+
+```
+GET /api/owner/dashboard
+```
+```json
+{
+  "data": {
+    "properties": 0,
+    "rooms": { "total": 0, "AVAILABLE": 0, "RENTED": 0, "HIDDEN": 0 },
+    "pendingRequests": 0,
+    "activeContracts": 0
+  }
+}
+```
+
+### 3.3. ✅ Tổng quan hệ thống
+
+```
+GET /api/admin/dashboard
+```
+```json
+{
+  "data": {
+    "users": {
+      "total": 6,
+      "byRole": { "ADMIN": 1, "OWNER": 2, "TENANT": 3 },
+      "byStatus": { "ACTIVE": 6, "LOCKED": 0 }
+    },
+    "properties": 0,
+    "rooms": 0,
+    "pendingPosts": 0
+  }
+}
+```
+
+Các dashboard chỉ **đếm** bản ghi của người đang đăng nhập. Hiện hầu hết bằng 0 vì chưa làm chức năng phòng, hợp đồng và hóa đơn.
+
+---
+
+## 4. Nhà trọ — `/properties` ⬜ Chưa làm
 
 | Method | Endpoint | Quyền | Mô tả |
 |---|---|---|---|
@@ -224,7 +309,7 @@ Body tạo nhà trọ:
 
 > Mọi endpoint sửa/xóa đều phải kiểm tra `property.ownerId === req.user.id`, nếu không trả 403. Đây là ràng buộc bảo mật quan trọng nhất của module này.
 
-## 4. Phòng — `/rooms` ⬜ Tuần 2
+## 5. Phòng — `/rooms` ⬜ Chưa làm
 
 | Method | Endpoint | Quyền | Mô tả |
 |---|---|---|---|
@@ -248,7 +333,7 @@ Body tạo phòng:
 
 Lỗi riêng: `409` mã phòng đã tồn tại trong cùng nhà trọ.
 
-## 5. Tải ảnh ⬜ Tuần 2
+## 6. Tải ảnh ⬜ Chưa làm
 
 ```
 POST /api/rooms/:id/images
@@ -267,7 +352,7 @@ Quyền: 🏠 OWNER
 
 Ảnh được phục vụ tĩnh tại `http://localhost:4000/uploads/<tên-file>` (đã cấu hình sẵn trong `backend/src/app.js`).
 
-## 6. Tiện ích — `/amenities` ⬜ Tuần 2
+## 7. Tiện ích — `/amenities` ⬜ Chưa làm
 
 | Method | Endpoint | Quyền | Mô tả |
 |---|---|---|---|
@@ -278,7 +363,7 @@ Quyền: 🏠 OWNER
 
 Seed đã tạo sẵn 12 tiện ích mẫu.
 
-## 7. Tin đăng — `/posts` ⬜ Tuần 3
+## 8. Tin đăng — `/posts` ⬜ Tuần 3
 
 | Method | Endpoint | Quyền | Mô tả |
 |---|---|---|---|
@@ -290,7 +375,7 @@ Seed đã tạo sẵn 12 tiện ích mẫu.
 | PUT | `/posts/:id/approve` | ⚙️ ADMIN | Duyệt, ghi `publishedAt` và `reviewedById` |
 | PUT | `/posts/:id/reject` | ⚙️ ADMIN | Từ chối, body `{ "rejectReason": "..." }` |
 
-## 8. Tìm kiếm — `/search` ⬜ Tuần 3
+## 9. Tìm kiếm — `/search` ⬜ Tuần 3
 
 ```
 GET /api/search/posts
@@ -314,7 +399,7 @@ GET /api/search/posts/:id
 ```
 Chi tiết tin đăng, đồng thời tăng `viewCount` thêm 1.
 
-## 9. Yêu cầu thuê — `/rental-requests` ⬜ Tuần 5
+## 10. Yêu cầu thuê — `/rental-requests` ⬜ Tuần 5
 
 | Method | Endpoint | Quyền | Mô tả |
 |---|---|---|---|
@@ -330,7 +415,7 @@ Quy tắc nghiệp vụ:
 - Một khách không được gửi hai yêu cầu `PENDING` cho cùng một phòng.
 - Duyệt yêu cầu **không** tự tạo hợp đồng — chủ trọ tạo hợp đồng ở bước riêng, vì còn phải thỏa thuận ngày bắt đầu và tiền cọc.
 
-## 10. Hợp đồng — `/contracts` ⬜ Tuần 5
+## 11. Hợp đồng — `/contracts` ⬜ Tuần 5
 
 | Method | Endpoint | Quyền | Mô tả |
 |---|---|---|---|
@@ -342,7 +427,7 @@ Quy tắc nghiệp vụ:
 
 Khi tạo hợp đồng, server tự sinh `code` và **sao chép** `rooms.price` sang `contracts.price` để cố định giá đã ký.
 
-## 11. Chốt số điện nước — `/meter-readings` ⬜ Tuần 6
+## 12. Chốt số điện nước — `/meter-readings` ⬜ Tuần 6
 
 | Method | Endpoint | Quyền | Mô tả |
 |---|---|---|---|
@@ -359,7 +444,7 @@ Kiểm tra bắt buộc: chỉ số mới phải lớn hơn hoặc bằng chỉ 
 
 > Tiện lợi cho người dùng: khi nhập kỳ mới, server nên tự điền `electricOld` bằng `electricNew` của kỳ trước.
 
-## 12. Hóa đơn — `/invoices` ⬜ Tuần 6
+## 13. Hóa đơn — `/invoices` ⬜ Tuần 6
 
 | Method | Endpoint | Quyền | Mô tả |
 |---|---|---|---|
@@ -382,7 +467,7 @@ totalAmount    = contracts.price + electricAmount + waterAmount + serviceAmount
 
 Đơn giá điện nước được **chép vào hóa đơn** tại thời điểm lập. Chủ trọ tăng giá về sau không làm thay đổi hóa đơn đã phát hành.
 
-## 13. Thống kê — `/stats` ⬜ Tuần 8
+## 14. Thống kê — `/stats` ⬜ Tuần 8
 
 | Method | Endpoint | Quyền | Nội dung |
 |---|---|---|---|
@@ -390,7 +475,7 @@ totalAmount    = contracts.price + electricAmount + waterAmount + serviceAmount
 | GET | `/stats/owner/revenue` | 🏠 OWNER | Doanh thu 12 tháng gần nhất, dựng biểu đồ |
 | GET | `/stats/admin` | ⚙️ ADMIN | Tổng người dùng theo role, tổng phòng, tin chờ duyệt, hợp đồng đang hiệu lực |
 
-## 14. Quản trị người dùng — `/admin/users` ⬜ Tuần 8
+## 15. Quản trị người dùng — `/admin/users` ⬜ Tuần 8
 
 | Method | Endpoint | Quyền | Mô tả |
 |---|---|---|---|
@@ -399,11 +484,11 @@ totalAmount    = contracts.price + electricAmount + waterAmount + serviceAmount
 | PUT | `/admin/users/:id/lock` | ⚙️ ADMIN | Khóa tài khoản |
 | PUT | `/admin/users/:id/unlock` | ⚙️ ADMIN | Mở khóa |
 
-Tài khoản bị khóa vẫn đăng nhập được nhưng nhận 403 ở mọi endpoint cần xác thực — middleware `authenticate` kiểm tra `status` ở mỗi request.
+Tài khoản bị khóa **không đăng nhập được** (403), và mọi token đang có của tài khoản đó cũng bị 403 ở request kế tiếp, vì middleware `authenticate` kiểm tra `status` ở mỗi request.
 
 ---
 
-## 15. Tài khoản dùng để thử API
+## 16. Tài khoản dùng để thử API
 
 Mật khẩu chung: `123456`
 
@@ -416,7 +501,7 @@ Mật khẩu chung: `123456`
 | `tenant2@duchome.vn` | TENANT |
 | `tenant3@duchome.vn` | TENANT |
 
-## 16. Thử nhanh bằng curl
+## 17. Thử nhanh bằng curl
 
 Đăng nhập và lấy token:
 ```bash
