@@ -133,6 +133,8 @@ DELETE FROM users WHERE email LIKE 'postman%@duchome.vn';
 6. Thử từ trình duyệt **trên điện thoại**: mở `http://192.168.1.2:4000/health`. Không mở được thì app cũng sẽ không kết nối được, xem mục 5.3.
 
 ### 5.2. Chạy app
+
+> Checklist đầy đủ để ghi PASS / FAIL / BLOCKED trên Android và iPhone: [`mobile-device-checklist.md`](mobile-device-checklist.md).
 ```bash
 cd mobile
 npx expo start
