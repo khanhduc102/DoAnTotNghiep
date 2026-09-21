@@ -24,8 +24,7 @@ export default function LoginPage() {
         return;
       }
 
-      localStorage.setItem('accessToken', result.tokens.accessToken);
-      localStorage.setItem('refreshToken', result.tokens.refreshToken);
+      localStorage.setItem('token', result.token);
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Khong ket noi duoc may chu');

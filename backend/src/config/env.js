@@ -2,7 +2,7 @@
 require('dotenv').config();
 
 // Cac bien bat buoc phai co, thieu la dung server ngay thay vi loi mo ho luc chay
-const REQUIRED = ['DATABASE_URL', 'JWT_ACCESS_SECRET', 'JWT_REFRESH_SECRET'];
+const REQUIRED = ['DATABASE_URL', 'JWT_SECRET'];
 const missing = REQUIRED.filter((key) => !process.env[key]);
 
 if (missing.length > 0) {
@@ -17,10 +17,8 @@ const env = {
   isDev: (process.env.NODE_ENV || 'development') === 'development',
 
   jwt: {
-    accessSecret: process.env.JWT_ACCESS_SECRET,
-    accessExpires: process.env.JWT_ACCESS_EXPIRES || '15m',
-    refreshSecret: process.env.JWT_REFRESH_SECRET,
-    refreshExpires: process.env.JWT_REFRESH_EXPIRES || '7d',
+    secret: process.env.JWT_SECRET,
+    expiresIn: process.env.JWT_EXPIRES_IN || '7d',
   },
 
   upload: {

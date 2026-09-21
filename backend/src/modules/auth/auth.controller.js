@@ -13,11 +13,6 @@ const login = asyncHandler(async (req, res) => {
   ok(res, result, 'Dang nhap thanh cong');
 });
 
-const refresh = asyncHandler(async (req, res) => {
-  const result = await authService.refresh(req.body.refreshToken);
-  ok(res, result, 'Lam moi token thanh cong');
-});
-
 const getMe = asyncHandler(async (req, res) => {
   const user = await authService.getProfile(req.user.id);
   ok(res, user, 'Lay thong tin ca nhan thanh cong');
@@ -33,4 +28,4 @@ const changePassword = asyncHandler(async (req, res) => {
   ok(res, null, 'Doi mat khau thanh cong');
 });
 
-module.exports = { register, login, refresh, getMe, updateMe, changePassword };
+module.exports = { register, login, getMe, updateMe, changePassword };

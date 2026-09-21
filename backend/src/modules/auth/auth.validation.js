@@ -30,10 +30,6 @@ const loginSchema = z.object({
   password: z.string().min(1, 'Vui long nhap mat khau'),
 });
 
-const refreshSchema = z.object({
-  refreshToken: z.string().min(1, 'Thieu refresh token'),
-});
-
 const updateProfileSchema = z
   .object({
     fullName: z.string().trim().min(2, 'Ho ten toi thieu 2 ky tu').max(120).optional(),
@@ -57,7 +53,6 @@ const changePasswordSchema = z
 module.exports = {
   registerSchema,
   loginSchema,
-  refreshSchema,
   updateProfileSchema,
   changePasswordSchema,
 };

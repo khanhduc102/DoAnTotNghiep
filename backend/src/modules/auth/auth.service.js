@@ -2,7 +2,7 @@
 const bcrypt = require('bcryptjs');
 const prisma = require('../../config/prisma');
 const ApiError = require('../../utils/ApiError');
-const { generateTokenPair, verifyRefreshToken } = require('../../utils/jwt');
+const { signToken } = require('../../utils/jwt');
 const { USER_PUBLIC_FIELDS } = require('../../middlewares/auth.middleware');
 
 const SALT_ROUNDS = 10;
@@ -28,7 +28,7 @@ const register = async ({ email, password, fullName, phone, role }) => {
     select: USER_PUBLIC_FIELDS,
   });
 
-  return { user, tokens: generateTokenPair(user) };
+  return { user, token: signToken(user) };
 };
 
 // Dang nhap bang email + mat khau
@@ -50,35 +50,7 @@ const login = async ({ email, password }) => {
   }
 
   const { password: _removed, ...safeUser } = user;
-  return { user: safeUser, tokens: generateTokenPair(user) };
-};
-
-// Cap lai cap token moi tu refresh token
-const refresh = async (refreshToken) => {
-  let payload;
-  try {
-    payload = verifyRefreshToken(refreshToken);
-  } catch (err) {
-    if (err.name === 'TokenExpiredError') {
-      throw ApiError.unauthorized('Refresh token da het han, vui long dang nhap lai');
-    }
-    throw ApiError.unauthorized('Refresh token khong hop le');
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { id: payload.id },
-    select: USER_PUBLIC_FIELDS,
-  });
-
-  if (!user) {
-    throw ApiError.unauthorized('Tai khoan khong con ton tai');
-  }
-
-  if (user.status === 'LOCKED') {
-    throw ApiError.forbidden('Tai khoan da bi khoa');
-  }
-
-  return { user, tokens: generateTokenPair(user) };
+  return { user: safeUser, token: signToken(user) };
 };
 
 // Lay thong tin ca nhan
@@ -123,7 +95,6 @@ const changePassword = async (userId, { currentPassword, newPassword }) => {
 module.exports = {
   register,
   login,
-  refresh,
   getProfile,
   updateProfile,
   changePassword,

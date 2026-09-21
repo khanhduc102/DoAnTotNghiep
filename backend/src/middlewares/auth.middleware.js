@@ -2,7 +2,7 @@
 const prisma = require('../config/prisma');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
-const { verifyAccessToken } = require('../utils/jwt');
+const { verifyToken } = require('../utils/jwt');
 
 // Cac truong cua user duoc gan vao req.user (khong bao gio kem password)
 const USER_PUBLIC_FIELDS = {
@@ -21,19 +21,19 @@ const authenticate = asyncHandler(async (req, res, next) => {
   const header = req.headers.authorization || '';
 
   if (!header.startsWith('Bearer ')) {
-    throw ApiError.unauthorized('Thieu access token');
+    throw ApiError.unauthorized('Thieu token xac thuc');
   }
 
   const token = header.slice(7).trim();
   let payload;
 
   try {
-    payload = verifyAccessToken(token);
+    payload = verifyToken(token);
   } catch (err) {
     if (err.name === 'TokenExpiredError') {
-      throw ApiError.unauthorized('Access token da het han');
+      throw ApiError.unauthorized('Phien dang nhap da het han, vui long dang nhap lai');
     }
-    throw ApiError.unauthorized('Access token khong hop le');
+    throw ApiError.unauthorized('Token khong hop le');
   }
 
   const user = await prisma.user.findUnique({

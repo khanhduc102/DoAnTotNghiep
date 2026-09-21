@@ -4,7 +4,7 @@
 > Đừng gọi các endpoint ⬜ từ mobile hay admin — chúng chưa tồn tại.
 
 **Base URL:** `http://localhost:4000/api`
-**Phiên bản:** cập nhật sau tuần 1 — 6/6 endpoint xác thực đã hoạt động.
+**Phiên bản:** cập nhật tuần 2 (Task 2A). Xác thực dùng một JWT hạn 7 ngày, đã bỏ refresh token. 5 endpoint xác thực hoạt động, kiểm thử bằng `npm test` trong `backend/`.
 
 ---
 
@@ -58,10 +58,12 @@ Tham số truy vấn dùng chung: `?page=1&limit=10`.
 Các endpoint cần đăng nhập phải gửi kèm header:
 
 ```
-Authorization: Bearer <accessToken>
+Authorization: Bearer <token>
 ```
 
-Access token sống **15 phút**, refresh token sống **7 ngày**. Khi access token hết hạn, server trả 401 kèm thông điệp *"Access token da het han"* — client gọi `/auth/refresh` để lấy cặp token mới rồi thử lại request cũ. Web admin đã cài sẵn cơ chế này trong `admin/src/api/client.js`.
+Mỗi lần đăng ký hoặc đăng nhập, server cấp **một JWT duy nhất, hạn 7 ngày**, payload gồm `{ id, role }`. Hệ thống **không có refresh token**. Khi token hết hạn, server trả 401 kèm thông điệp *"Phien dang nhap da het han, vui long dang nhap lai"*, client xóa token và đưa người dùng về màn hình đăng nhập (web admin làm việc này trong `admin/src/api/client.js`).
+
+Mỗi request, middleware `authenticate` đọc lại user trong DB. Vì vậy tài khoản bị ADMIN khóa sẽ bị chặn 403 **ngay lập tức**, kể cả khi token của họ vẫn còn hạn.
 
 ### 1.4. Bảng mã trạng thái
 
@@ -123,7 +125,7 @@ Phản hồi `201`:
   "message": "Dang ky thanh cong",
   "data": {
     "user": { "id": 7, "email": "tenant@duchome.vn", "fullName": "Lê Minh Đức", "role": "TENANT", "status": "ACTIVE" },
-    "tokens": { "accessToken": "eyJ...", "refreshToken": "eyJ..." }
+    "token": "eyJhbGciOiJIUzI1NiIs..."
   }
 }
 ```
@@ -141,26 +143,15 @@ Quyền: —
 
 Body: `{ "email": "...", "password": "..." }`
 
-Phản hồi `200`: cấu trúc `{ user, tokens }` giống mục 2.1.
+Phản hồi `200`: cấu trúc `{ user, token }` giống mục 2.1.
 
 Lỗi: `401` sai email hoặc mật khẩu · `403` tài khoản bị khóa.
 
 > Sai mật khẩu và email không tồn tại đều trả về **cùng một thông điệp** *"Email hoac mat khau khong dung"*. Đây là chủ ý: nếu phân biệt hai trường hợp, kẻ tấn công có thể dò xem email nào đã đăng ký trong hệ thống.
 
-### 2.3. ✅ Làm mới token
+### 2.3. Đã bỏ: làm mới token
 
-```
-POST /api/auth/refresh
-```
-Quyền: —
-
-Body: `{ "refreshToken": "eyJ..." }`
-
-Phản hồi `200`: cặp token mới kèm thông tin user.
-
-Lỗi: `401` refresh token sai hoặc hết hạn · `403` tài khoản bị khóa.
-
-> Access token **không** dùng thay cho refresh token được — hai loại ký bằng hai secret khác nhau. Trường hợp này đã có case kiểm thử riêng.
+`POST /api/auth/refresh` đã bị gỡ ở tuần 2 theo spec Task 2A, gọi vào sẽ nhận 404. Hết hạn token thì đăng nhập lại.
 
 ### 2.4. ✅ Xem hồ sơ cá nhân
 
@@ -434,7 +425,7 @@ curl -X POST http://localhost:4000/api/auth/login -H "Content-Type: application/
 
 Gọi endpoint cần đăng nhập:
 ```bash
-curl http://localhost:4000/api/auth/me -H "Authorization: Bearer <dán_accessToken_vào_đây>"
+curl http://localhost:4000/api/auth/me -H "Authorization: Bearer <dán_token_vào_đây>"
 ```
 
 Kiểm tra server còn sống:
