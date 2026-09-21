@@ -29,7 +29,7 @@ export default function DashboardPage({ user }) {
     authApi
       .getAdminDashboard()
       .then(setStats)
-      .catch((err) => setError(err.response?.data?.message || 'Khong tai duoc so lieu'));
+      .catch((err) => setError(err.response?.data?.message || 'Không tải được số liệu'));
   }, []);
 
   // Goi server thu hoi token truoc, loi mang van xoa token o trinh duyet
@@ -48,24 +48,24 @@ export default function DashboardPage({ user }) {
     <div style={{ padding: 32, fontFamily: 'sans-serif' }}>
       <h1>DUCHOME Admin</h1>
       <p>
-        Xin chao <strong>{user.fullName}</strong> ({user.role})
+        Xin chào <strong>{user.fullName}</strong> ({user.role})
       </p>
 
       {error && <p style={{ color: 'crimson' }}>{error}</p>}
 
       {stats && (
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', margin: '20px 0' }}>
-          <Stat label="Tong nguoi dung" value={stats.users.total} />
-          <Stat label="Chu tro" value={stats.users.byRole.OWNER} />
-          <Stat label="Khach thue" value={stats.users.byRole.TENANT} />
-          <Stat label="Tai khoan bi khoa" value={stats.users.byStatus.LOCKED} />
-          <Stat label="Phong" value={stats.rooms} />
-          <Stat label="Tin cho duyet" value={stats.pendingPosts} />
+          <Stat label="Tổng người dùng" value={stats.users.total} />
+          <Stat label="Chủ trọ" value={stats.users.byRole.OWNER} />
+          <Stat label="Khách thuê" value={stats.users.byRole.TENANT} />
+          <Stat label="Tài khoản bị khóa" value={stats.users.byStatus.LOCKED} />
+          <Stat label="Phòng" value={stats.rooms} />
+          <Stat label="Tin chờ duyệt" value={stats.pendingPosts} />
         </div>
       )}
 
       <button onClick={handleLogout} disabled={loggingOut}>
-        {loggingOut ? 'Dang dang xuat...' : 'Dang xuat'}
+        {loggingOut ? 'Đang đăng xuất...' : 'Đăng xuất'}
       </button>
     </div>
   );

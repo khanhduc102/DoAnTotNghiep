@@ -61,11 +61,11 @@ Các endpoint cần đăng nhập phải gửi kèm header:
 Authorization: Bearer <token>
 ```
 
-Mỗi lần đăng ký hoặc đăng nhập, server cấp **một JWT duy nhất, hạn 7 ngày**, payload gồm `{ id, role }`. Hệ thống **không có refresh token**. Khi token hết hạn, server trả 401 kèm thông điệp *"Phien dang nhap da het han, vui long dang nhap lai"*, client xóa token và đưa người dùng về màn hình đăng nhập (web admin làm việc này trong `admin/src/api/client.js`).
+Mỗi lần đăng ký hoặc đăng nhập, server cấp **một JWT duy nhất, hạn 7 ngày**, payload gồm `{ id, role }`. Hệ thống **không có refresh token**. Khi token hết hạn, server trả 401 kèm thông điệp *"Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại"*, client xóa token và đưa người dùng về màn hình đăng nhập (web admin làm việc này trong `admin/src/api/client.js`).
 
 Mỗi request, middleware `authenticate` đọc lại user trong DB và kiểm tra hai điều:
 - `status` là `LOCKED` thì trả **403** ngay, kể cả khi token còn hạn.
-- `ver` trong token khác `users.tokenVersion` thì trả **401** *"Phien dang nhap da ket thuc"*. Đây là cơ chế giúp logout thu hồi được token (xem mục 2.3).
+- `ver` trong token khác `users.tokenVersion` thì trả **401** *"Phiên đăng nhập đã kết thúc"*. Đây là cơ chế giúp logout thu hồi được token (xem mục 2.3).
 
 ### 1.4. Bảng mã trạng thái
 
@@ -124,7 +124,7 @@ Phản hồi `201`:
 ```json
 {
   "success": true,
-  "message": "Dang ky thanh cong",
+  "message": "Đăng ký thành công",
   "data": {
     "user": { "id": 7, "email": "tenant@duchome.vn", "fullName": "Lê Minh Đức", "role": "TENANT", "status": "ACTIVE" },
     "token": "eyJhbGciOiJIUzI1NiIs..."
@@ -149,7 +149,7 @@ Phản hồi `200`: cấu trúc `{ user, token }` giống mục 2.1.
 
 Lỗi: `401` sai email hoặc mật khẩu · `403` tài khoản bị khóa.
 
-> Sai mật khẩu và email không tồn tại đều trả về **cùng một thông điệp** *"Email hoac mat khau khong dung"*. Đây là chủ ý: nếu phân biệt hai trường hợp, kẻ tấn công có thể dò xem email nào đã đăng ký trong hệ thống.
+> Sai mật khẩu và email không tồn tại đều trả về **cùng một thông điệp** *"Email hoặc mật khẩu không chính xác"*. Đây là chủ ý: nếu phân biệt hai trường hợp, kẻ tấn công có thể dò xem email nào đã đăng ký trong hệ thống.
 
 ### 2.3. ✅ Đăng xuất
 
@@ -158,7 +158,7 @@ POST /api/auth/logout
 ```
 Quyền: 🔒
 
-Không cần body. Phản hồi `200`: `{ "success": true, "message": "Dang xuat thanh cong", "data": null }`
+Không cần body. Phản hồi `200`: `{ "success": true, "message": "Đăng xuất thành công", "data": null }`
 
 **Cơ chế:** JWT bình thường không thể thu hồi vì server không lưu nó. DucHome giải quyết bằng cột `users.tokenVersion`:
 1. Khi đăng nhập, giá trị `tokenVersion` hiện tại được ghi vào token dưới tên `ver`.

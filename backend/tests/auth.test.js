@@ -98,6 +98,17 @@ describe('POST /api/auth/register', () => {
     assert.equal(r.body.success, false);
   });
 
+  test('thong bao loi nhap lieu bang tieng Viet co dau, khong lot tieng Anh', async () => {
+    const r = await call('POST', '/api/auth/register', { body: { role: 'ADMIN' } });
+    assert.equal(r.status, 400);
+    const byField = Object.fromEntries(r.body.errors.map((e) => [e.field, e.message]));
+    assert.equal(byField.email, 'Vui lòng nhập email');
+    assert.equal(byField.password, 'Vui lòng nhập mật khẩu');
+    assert.equal(byField.fullName, 'Vui lòng nhập họ tên');
+    assert.equal(byField.role, 'Vai trò chỉ được là TENANT hoặc OWNER');
+    assert.equal(r.body.message, 'Dữ liệu không hợp lệ');
+  });
+
   test('du lieu sai tra loi tung truong', async () => {
     const r = await call('POST', '/api/auth/register', {
       body: { email: 'khong-phai-email', password: '12', fullName: 'A' },
@@ -132,7 +143,7 @@ describe('POST /api/auth/login', () => {
   test('email khong ton tai tra cung thong bao voi sai mat khau', async () => {
     const r = await login(`${RUN_PREFIX}khongtontai@duchome.vn`);
     assert.equal(r.status, 401);
-    assert.match(r.body.message, /Email hoac mat khau/);
+    assert.equal(r.body.message, 'Email hoặc mật khẩu không chính xác');
   });
 
   test('tai khoan bi khoa khong dang nhap duoc (403)', async () => {
@@ -142,7 +153,7 @@ describe('POST /api/auth/login', () => {
 
     const r = await login(email);
     assert.equal(r.status, 403);
-    assert.match(r.body.message, /bi khoa/);
+    assert.match(r.body.message, /bị khóa/);
   });
 });
 
@@ -190,7 +201,7 @@ describe('POST /api/auth/logout', () => {
 
     const me = await call('GET', '/api/auth/me', { token });
     assert.equal(me.status, 401, 'token da logout khong duoc dung tiep');
-    assert.match(me.body.message, /ket thuc/);
+    assert.match(me.body.message, /kết thúc/);
   });
 
   test('dang nhap lai sau khi logout thi dung binh thuong', async () => {

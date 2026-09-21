@@ -22,7 +22,7 @@ app.use('/uploads', express.static(path.join(__dirname, '..', env.upload.dir)));
 
 // Kiem tra server con song
 app.get('/health', (req, res) => {
-  res.json({ success: true, message: 'DUCHOME API dang chay', timestamp: new Date() });
+  res.json({ success: true, message: 'DucHome API đang chạy', timestamp: new Date() });
 });
 
 app.use('/api', routes);

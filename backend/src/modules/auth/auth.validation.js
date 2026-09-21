@@ -3,50 +3,62 @@ const { z } = require('zod');
 
 // SDT Viet Nam: bat dau 0 (10 so) hoac +84 (9 so sau ma vung)
 const phoneSchema = z
-  .string()
+  .string({ error: 'Số điện thoại không hợp lệ' })
   .trim()
-  .regex(/^(0\d{9}|\+84\d{9})$/, 'So dien thoai khong hop le');
+  .regex(/^(0\d{9}|\+84\d{9})$/, 'Số điện thoại không hợp lệ');
 
 const passwordSchema = z
-  .string()
-  .min(6, 'Mat khau toi thieu 6 ky tu')
-  .max(50, 'Mat khau toi da 50 ky tu');
+  .string({ error: 'Vui lòng nhập mật khẩu' })
+  .min(6, 'Mật khẩu tối thiểu 6 ký tự')
+  .max(50, 'Mật khẩu tối đa 50 ký tự');
+
+const emailSchema = z
+  .string({ error: 'Vui lòng nhập email' })
+  .trim()
+  .toLowerCase()
+  .email('Email không hợp lệ');
+
+const fullNameSchema = z
+  .string({ error: 'Vui lòng nhập họ tên' })
+  .trim()
+  .min(2, 'Họ tên tối thiểu 2 ký tự')
+  .max(120, 'Họ tên tối đa 120 ký tự');
 
 const registerSchema = z.object({
-  email: z.string().trim().toLowerCase().email('Email khong hop le'),
+  email: emailSchema,
   password: passwordSchema,
-  fullName: z
-    .string()
-    .trim()
-    .min(2, 'Ho ten toi thieu 2 ky tu')
-    .max(120, 'Ho ten toi da 120 ky tu'),
+  fullName: fullNameSchema,
   phone: phoneSchema.optional(),
   // Khong cho tu dang ky ADMIN - tai khoan ADMIN chi tao bang seed
-  role: z.enum(['OWNER', 'TENANT']).default('TENANT'),
+  role: z
+    .enum(['OWNER', 'TENANT'], { error: 'Vai trò chỉ được là TENANT hoặc OWNER' })
+    .default('TENANT'),
 });
 
 const loginSchema = z.object({
-  email: z.string().trim().toLowerCase().email('Email khong hop le'),
-  password: z.string().min(1, 'Vui long nhap mat khau'),
+  email: emailSchema,
+  password: z.string({ error: 'Vui lòng nhập mật khẩu' }).min(1, 'Vui lòng nhập mật khẩu'),
 });
 
 const updateProfileSchema = z
   .object({
-    fullName: z.string().trim().min(2, 'Ho ten toi thieu 2 ky tu').max(120).optional(),
+    fullName: fullNameSchema.optional(),
     phone: phoneSchema.optional(),
-    avatar: z.string().trim().max(255).optional(),
+    avatar: z.string().trim().max(255, 'Đường dẫn ảnh tối đa 255 ký tự').optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
-    message: 'Khong co truong nao de cap nhat',
+    message: 'Không có trường nào để cập nhật',
   });
 
 const changePasswordSchema = z
   .object({
-    currentPassword: z.string().min(1, 'Vui long nhap mat khau hien tai'),
+    currentPassword: z
+      .string({ error: 'Vui lòng nhập mật khẩu hiện tại' })
+      .min(1, 'Vui lòng nhập mật khẩu hiện tại'),
     newPassword: passwordSchema,
   })
   .refine((data) => data.currentPassword !== data.newPassword, {
-    message: 'Mat khau moi phai khac mat khau hien tai',
+    message: 'Mật khẩu mới phải khác mật khẩu hiện tại',
     path: ['newPassword'],
   });
 

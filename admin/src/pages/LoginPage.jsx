@@ -20,14 +20,14 @@ export default function LoginPage() {
 
       // Web quan tri chi danh cho ADMIN
       if (result.user.role !== 'ADMIN') {
-        setError('Tai khoan nay khong co quyen truy cap trang quan tri');
+        setError('Tài khoản này không có quyền truy cập trang quản trị');
         return;
       }
 
       localStorage.setItem('token', result.token);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || 'Khong ket noi duoc may chu');
+      setError(err.response?.data?.message || 'Không kết nối được máy chủ');
     } finally {
       setLoading(false);
     }
@@ -51,7 +51,7 @@ export default function LoginPage() {
         </div>
 
         <div style={{ marginBottom: 12 }}>
-          <label htmlFor="password">Mat khau</label>
+          <label htmlFor="password">Mật khẩu</label>
           <input
             id="password"
             type="password"
@@ -65,7 +65,7 @@ export default function LoginPage() {
         {error && <p style={{ color: 'crimson' }}>{error}</p>}
 
         <button type="submit" disabled={loading} style={{ width: '100%', padding: 10 }}>
-          {loading ? 'Dang xu ly...' : 'Dang nhap'}
+          {loading ? 'Đang xử lý...' : 'Đăng nhập'}
         </button>
       </form>
     </div>

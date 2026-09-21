@@ -21,7 +21,7 @@ const authenticate = asyncHandler(async (req, res, next) => {
   const header = req.headers.authorization || '';
 
   if (!header.startsWith('Bearer ')) {
-    throw ApiError.unauthorized('Thieu token xac thuc');
+    throw ApiError.unauthorized('Thiếu token xác thực');
   }
 
   const token = header.slice(7).trim();
@@ -31,9 +31,9 @@ const authenticate = asyncHandler(async (req, res, next) => {
     payload = verifyToken(token);
   } catch (err) {
     if (err.name === 'TokenExpiredError') {
-      throw ApiError.unauthorized('Phien dang nhap da het han, vui long dang nhap lai');
+      throw ApiError.unauthorized('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại');
     }
-    throw ApiError.unauthorized('Token khong hop le');
+    throw ApiError.unauthorized('Token không hợp lệ');
   }
 
   const found = await prisma.user.findUnique({
@@ -42,17 +42,17 @@ const authenticate = asyncHandler(async (req, res, next) => {
   });
 
   if (!found) {
-    throw ApiError.unauthorized('Tai khoan khong con ton tai');
+    throw ApiError.unauthorized('Tài khoản không còn tồn tại');
   }
 
   // Token cap truoc lan logout gan nhat (hoac truoc khi co co che nay) -> het hieu luc
   const { tokenVersion, ...user } = found;
   if (payload.ver !== tokenVersion) {
-    throw ApiError.unauthorized('Phien dang nhap da ket thuc, vui long dang nhap lai');
+    throw ApiError.unauthorized('Phiên đăng nhập đã kết thúc, vui lòng đăng nhập lại');
   }
 
   if (user.status === 'LOCKED') {
-    throw ApiError.forbidden('Tai khoan da bi khoa');
+    throw ApiError.forbidden('Tài khoản đã bị khóa');
   }
 
   req.user = user;
@@ -66,7 +66,7 @@ const authorize = (...roles) => (req, res, next) => {
   }
 
   if (!roles.includes(req.user.role)) {
-    return next(ApiError.forbidden('Ban khong co quyen truy cap chuc nang nay'));
+    return next(ApiError.forbidden('Bạn không có quyền truy cập chức năng này'));
   }
 
   next();

@@ -609,7 +609,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('Tra ve 401', () => pm.response.to.have.status(401));",
-                  "pm.test('Bao phien da ket thuc', () => pm.expect(pm.response.json().message).to.include('ket thuc'));"
+                  "pm.test('Bao phien da ket thuc', () => pm.expect(pm.response.json().message).to.include('kết thúc'));"
                 ]
               }
             }

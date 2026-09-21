@@ -5,32 +5,32 @@ const authService = require('./auth.service');
 
 const register = asyncHandler(async (req, res) => {
   const result = await authService.register(req.body);
-  created(res, result, 'Dang ky thanh cong');
+  created(res, result, 'Đăng ký thành công');
 });
 
 const login = asyncHandler(async (req, res) => {
   const result = await authService.login(req.body);
-  ok(res, result, 'Dang nhap thanh cong');
+  ok(res, result, 'Đăng nhập thành công');
 });
 
 const logout = asyncHandler(async (req, res) => {
   await authService.logout(req.user.id);
-  ok(res, null, 'Dang xuat thanh cong');
+  ok(res, null, 'Đăng xuất thành công');
 });
 
 const getMe = asyncHandler(async (req, res) => {
   const user = await authService.getProfile(req.user.id);
-  ok(res, user, 'Lay thong tin ca nhan thanh cong');
+  ok(res, user, 'Lấy thông tin cá nhân thành công');
 });
 
 const updateMe = asyncHandler(async (req, res) => {
   const user = await authService.updateProfile(req.user.id, req.body);
-  ok(res, user, 'Cap nhat ho so thanh cong');
+  ok(res, user, 'Cập nhật hồ sơ thành công');
 });
 
 const changePassword = asyncHandler(async (req, res) => {
   await authService.changePassword(req.user.id, req.body);
-  ok(res, null, 'Doi mat khau thanh cong');
+  ok(res, null, 'Đổi mật khẩu thành công');
 });
 
 module.exports = { register, login, logout, getMe, updateMe, changePassword };

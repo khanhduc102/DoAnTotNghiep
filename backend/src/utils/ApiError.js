@@ -7,23 +7,23 @@ class ApiError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 
-  static badRequest(message = 'Du lieu khong hop le', errors = null) {
+  static badRequest(message = 'Dữ liệu không hợp lệ', errors = null) {
     return new ApiError(400, message, errors);
   }
 
-  static unauthorized(message = 'Ban chua dang nhap') {
+  static unauthorized(message = 'Bạn chưa đăng nhập') {
     return new ApiError(401, message);
   }
 
-  static forbidden(message = 'Ban khong co quyen thuc hien thao tac nay') {
+  static forbidden(message = 'Bạn không có quyền thực hiện thao tác này') {
     return new ApiError(403, message);
   }
 
-  static notFound(message = 'Khong tim thay du lieu') {
+  static notFound(message = 'Không tìm thấy dữ liệu') {
     return new ApiError(404, message);
   }
 
-  static conflict(message = 'Du lieu da ton tai') {
+  static conflict(message = 'Dữ liệu đã tồn tại') {
     return new ApiError(409, message);
   }
 }

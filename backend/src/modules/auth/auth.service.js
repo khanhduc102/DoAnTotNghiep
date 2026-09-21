@@ -11,13 +11,13 @@ const SALT_ROUNDS = 10;
 const register = async ({ email, password, fullName, phone, role }) => {
   const existedEmail = await prisma.user.findUnique({ where: { email } });
   if (existedEmail) {
-    throw ApiError.conflict('Email da duoc su dung');
+    throw ApiError.conflict('Email đã được sử dụng');
   }
 
   if (phone) {
     const existedPhone = await prisma.user.findUnique({ where: { phone } });
     if (existedPhone) {
-      throw ApiError.conflict('So dien thoai da duoc su dung');
+      throw ApiError.conflict('Số điện thoại đã được sử dụng');
     }
   }
 
@@ -37,16 +37,16 @@ const login = async ({ email, password }) => {
 
   // Bao loi chung chung de khong lo email nao ton tai trong he thong
   if (!user) {
-    throw ApiError.unauthorized('Email hoac mat khau khong dung');
+    throw ApiError.unauthorized('Email hoặc mật khẩu không chính xác');
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    throw ApiError.unauthorized('Email hoac mat khau khong dung');
+    throw ApiError.unauthorized('Email hoặc mật khẩu không chính xác');
   }
 
   if (user.status === 'LOCKED') {
-    throw ApiError.forbidden('Tai khoan da bi khoa, vui long lien he quan tri vien');
+    throw ApiError.forbidden('Tài khoản đã bị khóa, vui lòng liên hệ quản trị viên');
   }
 
   const { password: _password, tokenVersion: _version, ...safeUser } = user;
@@ -70,7 +70,7 @@ const updateProfile = async (userId, data) => {
   if (data.phone) {
     const existedPhone = await prisma.user.findUnique({ where: { phone: data.phone } });
     if (existedPhone && existedPhone.id !== userId) {
-      throw ApiError.conflict('So dien thoai da duoc su dung');
+      throw ApiError.conflict('Số điện thoại đã được sử dụng');
     }
   }
 
@@ -85,12 +85,12 @@ const updateProfile = async (userId, data) => {
 const changePassword = async (userId, { currentPassword, newPassword }) => {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) {
-    throw ApiError.notFound('Tai khoan khong ton tai');
+    throw ApiError.notFound('Tài khoản không tồn tại');
   }
 
   const isMatch = await bcrypt.compare(currentPassword, user.password);
   if (!isMatch) {
-    throw ApiError.badRequest('Mat khau hien tai khong dung');
+    throw ApiError.badRequest('Mật khẩu hiện tại không đúng');
   }
 
   const hashedPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);

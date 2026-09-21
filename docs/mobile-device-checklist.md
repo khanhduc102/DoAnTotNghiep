@@ -12,9 +12,9 @@ Dùng để xác nhận luồng xác thực trên **Android** và **iPhone** th�
 
 | # | Việc cần làm | Cách kiểm tra | ✓ |
 |---|---|---|---|
-| P1 | Bật MySQL và backend (`cd backend`, rồi `npm run dev`) | Trên máy tính mở `http://localhost:4000/health` thấy `DUCHOME API dang chay` | ☐ |
+| P1 | Bật MySQL và backend (`cd backend`, rồi `npm run dev`) | Trên máy tính mở `http://localhost:4000/health` thấy `DucHome API đang chạy` | ☐ |
 | P2 | Điện thoại bắt Wi-Fi **cùng router** với máy tính. Máy tính đang cắm dây mạng (card Ethernet `192.168.1.2`), nên Wi-Fi của điện thoại phải phát ra từ chính router đó, **không dùng mạng Guest** | Điện thoại: Cài đặt → Wi-Fi → xem IP có dạng `192.168.1.x` | ☐ |
-| P3 | Điện thoại kết nối được tới backend | Mở **trình duyệt trên điện thoại**, vào `http://192.168.1.2:4000/health`, thấy `DUCHOME API dang chay` | ☐ |
+| P3 | Điện thoại kết nối được tới backend | Mở **trình duyệt trên điện thoại**, vào `http://192.168.1.2:4000/health`, thấy `DucHome API đang chạy` | ☐ |
 | P4 | `mobile/.env` đúng IP | Có dòng `EXPO_PUBLIC_API_URL=http://192.168.1.2:4000/api`. Nếu IP máy tính đổi thì sửa dòng này | ☐ |
 | P5 | Cài **Expo Go** bản mới nhất, hỗ trợ **SDK 57** | Nếu Expo Go báo *"Project is incompatible"* thì cập nhật Expo Go | ☐ |
 | P6 | Chạy Expo **có xóa cache** (bắt buộc sau mỗi lần sửa `.env`) | `cd mobile`, rồi `npx expo start -c` | ☐ |
@@ -58,14 +58,14 @@ Khi test thiết bị thứ hai, đổi số trong email đăng ký (`dt.tenant0
 |---|---|---|---|
 | 1 | Nếu đang ở Trang chủ thì **Đăng xuất** → **Đăng ký** | Màn *Tạo tài khoản* | ☐ |
 | 2 | Chọn **Tôi cho thuê** | Ô *Tôi cho thuê* đổi sang viền xanh | ☐ |
-| 3 | Nhập số điện thoại `123` và các trường khác hợp lệ → **Tạo tài khoản** | Dưới ô số điện thoại: *"So dien thoai khong hop le"* | ☐ |
+| 3 | Nhập số điện thoại `123` và các trường khác hợp lệ → **Tạo tài khoản** | Dưới ô số điện thoại: *"Số điện thoại không hợp lệ"* | ☐ |
 | 4 | Sửa số điện thoại thành một số 10 chữ số, bắt đầu bằng 0 và chưa ai dùng (email `dt.owner01@duchome.vn`) → **Tạo tài khoản** | Vào **Trang chủ chủ trọ**, badge *Chủ trọ*, 6 ô số liệu | ☐ |
-| 5 | Đăng xuất, đăng ký lại bằng đúng email `dt.owner01@duchome.vn` | Banner đỏ: *"Email da duoc su dung"* | ☐ |
+| 5 | Đăng xuất, đăng ký lại bằng đúng email `dt.owner01@duchome.vn` | Banner đỏ: *"Email đã được sử dụng"* | ☐ |
 
 ### TC-03 · Đăng nhập TENANT
 | Bước | Thao tác | Kết quả mong đợi | ✓ |
 |---|---|---|---|
-| 1 | `tenant1@duchome.vn` / mật khẩu sai `111111` | Banner đỏ *"Email hoac mat khau khong dung"*, vẫn ở màn Đăng nhập | ☐ |
+| 1 | `tenant1@duchome.vn` / mật khẩu sai `111111` | Banner đỏ *"Email hoặc mật khẩu không chính xác"*, vẫn ở màn Đăng nhập | ☐ |
 | 2 | `tenant1@duchome.vn` / `123456` | Nút hiện vòng xoay, sau đó vào **Trang chủ khách thuê**, tên *Le Minh Duc* | ☐ |
 | 3 | Kéo màn hình xuống | Vòng xoay làm mới xuất hiện, số liệu tải lại, không báo lỗi | ☐ |
 
@@ -117,7 +117,7 @@ App không hiển thị token, nên dùng Postman làm "thiết bị thứ hai" 
 | 2 | **Postman:** `POST http://localhost:4000/api/auth/login` với body `{"email":"dt.tenant01@duchome.vn","password":"123456"}`, copy `data.token` | 200, có token (gọi là token P) | ☐ |
 | 3 | **Postman:** `GET /api/auth/me`, header `Authorization: Bearer <token P>` | 200 | ☐ |
 | 4 | **Điện thoại:** bấm **Đăng xuất** | Về màn Đăng nhập | ☐ |
-| 5 | **Postman:** gửi lại request ở bước 3 | **401** *"Phien dang nhap da ket thuc, vui long dang nhap lai"*. Điều này chứng minh logout trên điện thoại đã thu hồi token ở server | ☐ |
+| 5 | **Postman:** gửi lại request ở bước 3 | **401** *"Phiên đăng nhập đã kết thúc, vui lòng đăng nhập lại"*. Điều này chứng minh logout trên điện thoại đã thu hồi token ở server | ☐ |
 | 6 | *(Chiều ngược lại)* **Điện thoại:** đăng nhập lại. **Postman:** đăng nhập lấy token mới, gọi `POST /api/auth/logout` bằng token đó. **Điện thoại:** kéo màn hình để làm mới | Điện thoại tự quay về màn Đăng nhập, vì token trên máy đã bị thu hồi | ☐ |
 
 ### TC-11 · TENANT không gọi được API OWNER
@@ -126,13 +126,13 @@ Có hai lớp chặn: app không có đường dẫn tới màn hình OWNER, và
 |---|---|---|---|
 | 1 | **Điện thoại:** đăng nhập `tenant1`, tìm trên màn hình, vuốt từ mép trái, bấm Back | Không có nút hay đường nào dẫn tới màn chủ trọ. Trên Android, Back ở màn hình gốc sẽ **ẩn/thoát app**; hành vi này bình thường, chỉ cần Back **không mở** màn Đăng nhập hay màn chủ trọ | ☐ |
 | 2 | **Postman:** đăng nhập `tenant1@duchome.vn`, lấy token | 200 | ☐ |
-| 3 | **Postman:** `GET /api/owner/dashboard` với token TENANT | **403** *"Ban khong co quyen truy cap chuc nang nay"* | ☐ |
+| 3 | **Postman:** `GET /api/owner/dashboard` với token TENANT | **403** *"Bạn không có quyền truy cập chức năng này"* | ☐ |
 
 ### TC-12 · OWNER không gọi được API ADMIN
 | Bước | Thao tác | Kết quả mong đợi | ✓ |
 |---|---|---|---|
 | 1 | **Điện thoại:** đăng nhập `owner1` | Chỉ có Trang chủ chủ trọ, không có chức năng quản trị | ☐ |
-| 2 | **Postman:** đăng nhập `owner1@duchome.vn`, lấy token → `GET /api/admin/dashboard` | **403** *"Ban khong co quyen truy cap chuc nang nay"* | ☐ |
+| 2 | **Postman:** đăng nhập `owner1@duchome.vn`, lấy token → `GET /api/admin/dashboard` | **403** *"Bạn không có quyền truy cập chức năng này"* | ☐ |
 
 Có thể chạy nhanh bước Postman của TC-11 và TC-12 bằng thư mục **3. Phan quyen** trong collection `docs/postman/DucHome-Auth.postman_collection.json`.
 

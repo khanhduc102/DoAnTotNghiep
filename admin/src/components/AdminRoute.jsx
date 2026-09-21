@@ -30,7 +30,7 @@ export default function AdminRoute({ children }) {
   }, [hasToken]);
 
   if (state === 'denied') return <Navigate to="/login" replace />;
-  if (state === 'checking') return <p style={{ padding: 32, fontFamily: 'sans-serif' }}>Dang kiem tra quyen truy cap...</p>;
+  if (state === 'checking') return <p style={{ padding: 32, fontFamily: 'sans-serif' }}>Đang kiểm tra quyền truy cập...</p>;
 
   // Truyen user xuong trang con de khong phai goi /auth/me lan nua
   return children(user);

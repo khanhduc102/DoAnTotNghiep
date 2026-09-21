@@ -71,7 +71,7 @@ npm test
    cd backend
    npm run dev
    ```
-3. Kiểm tra: mở `http://localhost:4000/health` phải thấy `"DUCHOME API dang chay"`.
+3. Kiểm tra: mở `http://localhost:4000/health` phải thấy `"DucHome API đang chạy"`.
 
 ### 4.2. Import collection
 1. Mở Postman → **Import** → chọn file `docs/postman/DucHome-Auth.postman_collection.json`.
@@ -91,7 +91,7 @@ Thứ tự thư mục có ý nghĩa: thư mục 2 lưu token vào biến, thư m
 | **1. Đăng ký** | Tạo TENANT mới (201); gửi `role: ADMIN` bị chặn (400); trùng email (409); dữ liệu sai trả lỗi theo từng trường (400) |
 | **2. Đăng nhập** | Ba request đăng nhập **tự lưu token** vào `tenantToken`, `ownerToken`, `adminToken`; sai mật khẩu (401); `/auth/me` có và không có token |
 | **3. Phân quyền** | 9 request tương ứng 9 ô của bảng phân quyền ở mục 1, cộng một request không có token |
-| **4. Đăng xuất** | Đăng xuất user vừa đăng ký ở thư mục 1, sau đó dùng lại token cũ bị 401 *"Phien dang nhap da ket thuc"* |
+| **4. Đăng xuất** | Đăng xuất user vừa đăng ký ở thư mục 1, sau đó dùng lại token cũ bị 401 *"Phiên đăng nhập đã kết thúc"* |
 
 Muốn xem token đang lưu: bấm vào collection → tab **Variables**.
 
@@ -102,7 +102,7 @@ Hiện chưa có API khóa tài khoản (dự kiến tuần 8), nên thao tác q
 ```sql
 UPDATE users SET status = 'LOCKED' WHERE email = 'tenant2@duchome.vn';
 ```
-- Đăng nhập `tenant2` → **403** *"Tai khoan da bi khoa"*
+- Đăng nhập `tenant2` → **403** *"Tài khoản đã bị khóa"*
 - Token lấy được trước khi khóa → gọi `/auth/me` cũng bị **403**
 
 Mở khóa lại:
@@ -179,7 +179,7 @@ Mở `http://localhost:5173`.
 | # | Thao tác | Kết quả mong đợi |
 |---|---|---|
 | 1 | Vào `/` khi chưa đăng nhập | Chuyển về `/login` |
-| 2 | Đăng nhập `tenant1@duchome.vn` | *"Tai khoan nay khong co quyen truy cap trang quan tri"* |
+| 2 | Đăng nhập `tenant1@duchome.vn` | *"Tài khoản này không có quyền truy cập trang quản trị"* |
 | 3 | Đăng nhập `admin@duchome.vn` | Dashboard với 6 ô số liệu |
 | 4 | Bấm Đăng xuất | Về `/login`; token cũ bị server từ chối |
 | 5 | DevTools → Console: `localStorage.setItem('token', '<token TENANT lấy từ Postman>')` rồi tải lại `/` | Bị đẩy về `/login`, token bị xóa |
@@ -194,7 +194,7 @@ Mở `http://localhost:5173`.
 | 2 | Logout đăng xuất trên **mọi thiết bị** | Thấp | Là hệ quả có chủ đích của cơ chế `tokenVersion`. Muốn đăng xuất riêng từng thiết bị thì cần thêm bảng lưu phiên (sửa schema) |
 | 3 | Đổi mật khẩu **không** thu hồi các phiên đang mở | Trung bình | Chỉ cần thêm `tokenVersion: { increment: 1 }` vào `changePassword`. Chưa làm vì ngoài phạm vi task |
 | 4 | Chưa giới hạn số lần đăng nhập sai | Trung bình | Có thể bị dò mật khẩu. Cần thêm thư viện rate limit (ví dụ `express-rate-limit`) |
-| 5 | Thông báo lỗi từ backend **không dấu**, giao diện mobile **có dấu** | Thấp | Trên app sẽ thấy lẫn hai kiểu. Nên thống nhất: hoặc Việt hóa có dấu toàn bộ backend, hoặc mobile tự dịch theo mã lỗi |
+| 5 | ~~Thông báo lỗi từ backend không dấu~~ | ✅ Đã xử lý | Toàn bộ thông báo backend, lỗi nhập liệu của zod và nhãn web admin đã chuyển sang tiếng Việt có dấu |
 | 6 | Chưa có API khóa/mở tài khoản | Thấp | Đang khóa bằng SQL (mục 4.5). Đã có trong `api.md` mục 15, dự kiến tuần 8 |
 | 7 | Chưa có quên mật khẩu | Thấp | Ngoài phạm vi task. Cần dịch vụ gửi email |
 | 8 | Test chạy trên chính database `duchome` đang dev | Thấp | Dữ liệu test tự dọn. Muốn tách riêng thì tạo `duchome_test` |
