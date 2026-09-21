@@ -144,20 +144,24 @@ Ghi **PASS**, **FAIL** hoặc **BLOCKED** (không chạy được vì lỗi môi
 
 | TC | Nội dung | Android | iPhone | Ghi chú |
 |---|---|---|---|---|
-| 01 | Đăng ký TENANT | | | |
-| 02 | Đăng ký OWNER | | | |
-| 03 | Đăng nhập TENANT | | | |
-| 04 | Đăng nhập OWNER | | | |
-| 05 | ADMIN bị từ chối trên mobile | | | |
-| 06 | Token được lưu | | | |
-| 07 | Đóng app và mở lại | | | |
-| 08 | Tự động đăng nhập | | | |
-| 09 | Logout | | | |
-| 10 | Token cũ sau logout không dùng được | | | |
-| 11 | TENANT không gọi được API OWNER | | | |
-| 12 | OWNER không gọi được API ADMIN | | | |
+| 01 | Đăng ký TENANT | PASS | | 21/09: lỗi validate hiện dưới từng ô, đăng ký vào Trang chủ khách thuê; DB đúng role TENANT, phone null |
+| 02 | Đăng ký OWNER | PASS* | | 21/09: bước 1, 2, 4, 5 đạt (DB: 1 tài khoản OWNER, trùng email bị 409). *Bước 3 chưa có ảnh xác nhận dòng lỗi dưới ô số điện thoại; API trả đúng `field: phone` |
+| 03 | Đăng nhập TENANT | Chưa chạy | | |
+| 04 | Đăng nhập OWNER | Chưa chạy | | |
+| 05 | ADMIN bị từ chối trên mobile | Chưa chạy | | |
+| 06 | Token được lưu | Chưa chạy | | |
+| 07 | Đóng app và mở lại | Chưa chạy | | |
+| 08 | Tự động đăng nhập | Chưa chạy | | |
+| 09 | Logout | Chưa chạy | | |
+| 10 | Token cũ sau logout không dùng được | Chưa chạy | | |
+| 11 | TENANT không gọi được API OWNER | Chưa chạy | | |
+| 12 | OWNER không gọi được API ADMIN | Chưa chạy | | |
 
 Thông tin thiết bị: Android `__________` (bản Android `____`) · iPhone `__________` (bản iOS `____`) · Expo Go `____`
+
+**Lần chạy 21/09/2026 (Android, tạm dừng theo yêu cầu):** P1–P7 đạt. Tài khoản đã tạo: `dt.tenant01@duchome.vn` (TENANT), `dt.owern01@duchome.vn` (OWNER, gõ nhầm `owern`, số `0987650001`).
+
+Ghi chú giao diện: trên máy test, mọi chữ có màu (badge, nút viền, dòng lỗi) hiện **đen**, còn viền vẫn đúng màu. Nghi do tùy chọn trợ năng *Văn bản có độ tương phản cao* đang bật. Chưa xác nhận, **chưa sửa code**.
 
 ---
 
