@@ -1,12 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
-
-// Chan cac trang can dang nhap
-function PrivateRoute({ children }) {
-  const token = localStorage.getItem('token');
-  return token ? children : <Navigate to="/login" replace />;
-}
+import AdminRoute from './components/AdminRoute';
 
 export default function App() {
   return (
@@ -15,11 +10,7 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route
           path="/"
-          element={
-            <PrivateRoute>
-              <DashboardPage />
-            </PrivateRoute>
-          }
+          element={<AdminRoute>{(user) => <DashboardPage user={user} />}</AdminRoute>}
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
