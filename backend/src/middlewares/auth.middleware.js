@@ -36,13 +36,19 @@ const authenticate = asyncHandler(async (req, res, next) => {
     throw ApiError.unauthorized('Token khong hop le');
   }
 
-  const user = await prisma.user.findUnique({
+  const found = await prisma.user.findUnique({
     where: { id: payload.id },
-    select: USER_PUBLIC_FIELDS,
+    select: { ...USER_PUBLIC_FIELDS, tokenVersion: true },
   });
 
-  if (!user) {
+  if (!found) {
     throw ApiError.unauthorized('Tai khoan khong con ton tai');
+  }
+
+  // Token cap truoc lan logout gan nhat (hoac truoc khi co co che nay) -> het hieu luc
+  const { tokenVersion, ...user } = found;
+  if (payload.ver !== tokenVersion) {
+    throw ApiError.unauthorized('Phien dang nhap da ket thuc, vui long dang nhap lai');
   }
 
   if (user.status === 'LOCKED') {

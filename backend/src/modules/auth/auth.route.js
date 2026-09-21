@@ -11,6 +11,7 @@ router.post('/register', validate(schema.registerSchema), controller.register);
 router.post('/login', validate(schema.loginSchema), controller.login);
 
 // ----- Can dang nhap -----
+router.post('/logout', authenticate, controller.logout);
 router.get('/me', authenticate, controller.getMe);
 router.put('/me', authenticate, validate(schema.updateProfileSchema), controller.updateMe);
 router.put(

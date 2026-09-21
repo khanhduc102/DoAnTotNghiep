@@ -23,12 +23,12 @@ const register = async ({ email, password, fullName, phone, role }) => {
 
   const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
-  const user = await prisma.user.create({
+  const { tokenVersion, ...user } = await prisma.user.create({
     data: { email, password: hashedPassword, fullName, phone, role },
-    select: USER_PUBLIC_FIELDS,
+    select: { ...USER_PUBLIC_FIELDS, tokenVersion: true },
   });
 
-  return { user, token: signToken(user) };
+  return { user, token: signToken({ ...user, tokenVersion }) };
 };
 
 // Dang nhap bang email + mat khau
@@ -49,8 +49,16 @@ const login = async ({ email, password }) => {
     throw ApiError.forbidden('Tai khoan da bi khoa, vui long lien he quan tri vien');
   }
 
-  const { password: _removed, ...safeUser } = user;
+  const { password: _password, tokenVersion: _version, ...safeUser } = user;
   return { user: safeUser, token: signToken(user) };
+};
+
+// Dang xuat: tang tokenVersion de moi token da cap cho user nay (tren moi thiet bi) het hieu luc
+const logout = async (userId) => {
+  await prisma.user.update({
+    where: { id: userId },
+    data: { tokenVersion: { increment: 1 } },
+  });
 };
 
 // Lay thong tin ca nhan
@@ -95,6 +103,7 @@ const changePassword = async (userId, { currentPassword, newPassword }) => {
 module.exports = {
   register,
   login,
+  logout,
   getProfile,
   updateProfile,
   changePassword,

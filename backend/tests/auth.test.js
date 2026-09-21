@@ -179,6 +179,57 @@ describe('GET /api/auth/me', () => {
   });
 });
 
+describe('POST /api/auth/logout', () => {
+  test('dang xuat thanh cong va token cu het hieu luc', async () => {
+    const reg = await registerUser('logout');
+    const token = reg.body.data.token;
+
+    const out = await call('POST', '/api/auth/logout', { token });
+    assert.equal(out.status, 200);
+    assert.equal(out.body.success, true);
+
+    const me = await call('GET', '/api/auth/me', { token });
+    assert.equal(me.status, 401, 'token da logout khong duoc dung tiep');
+    assert.match(me.body.message, /ket thuc/);
+  });
+
+  test('dang nhap lai sau khi logout thi dung binh thuong', async () => {
+    await registerUser('relogin');
+    const email = `${RUN_PREFIX}relogin@duchome.vn`;
+    const first = await login(email);
+    await call('POST', '/api/auth/logout', { token: first.body.data.token });
+
+    const second = await login(email);
+    const me = await call('GET', '/api/auth/me', { token: second.body.data.token });
+    assert.equal(me.status, 200);
+  });
+
+  test('logout o mot thiet bi thi token o thiet bi khac cung het hieu luc', async () => {
+    await registerUser('two-devices');
+    const email = `${RUN_PREFIX}two-devices@duchome.vn`;
+    const phone = await login(email);
+    const laptop = await login(email);
+
+    await call('POST', '/api/auth/logout', { token: phone.body.data.token });
+    const r = await call('GET', '/api/auth/me', { token: laptop.body.data.token });
+    assert.equal(r.status, 401);
+  });
+
+  test('logout khong co token bi chan 401', async () => {
+    const r = await call('POST', '/api/auth/logout');
+    assert.equal(r.status, 401);
+  });
+
+  test('tokenVersion khong bi lo ra ngoai', async () => {
+    const reg = await registerUser('no-leak');
+    assert.equal(reg.body.data.user.tokenVersion, undefined);
+    const lg = await login(`${RUN_PREFIX}no-leak@duchome.vn`);
+    assert.equal(lg.body.data.user.tokenVersion, undefined);
+    const me = await call('GET', '/api/auth/me', { token: lg.body.data.token });
+    assert.equal(me.body.data.tokenVersion, undefined);
+  });
+});
+
 describe('authorize(...roles)', () => {
   test('TENANT goi route chi danh cho ADMIN bi chan 403', async () => {
     const reg = await registerUser('role-tenant');

@@ -13,6 +13,11 @@ const login = asyncHandler(async (req, res) => {
   ok(res, result, 'Dang nhap thanh cong');
 });
 
+const logout = asyncHandler(async (req, res) => {
+  await authService.logout(req.user.id);
+  ok(res, null, 'Dang xuat thanh cong');
+});
+
 const getMe = asyncHandler(async (req, res) => {
   const user = await authService.getProfile(req.user.id);
   ok(res, user, 'Lay thong tin ca nhan thanh cong');
@@ -28,4 +33,4 @@ const changePassword = asyncHandler(async (req, res) => {
   ok(res, null, 'Doi mat khau thanh cong');
 });
 
-module.exports = { register, login, getMe, updateMe, changePassword };
+module.exports = { register, login, logout, getMe, updateMe, changePassword };

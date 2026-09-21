@@ -58,16 +58,18 @@ enum InvoiceStatus {
 // ---------- 1. NGUOI DUNG ----------
 
 model User {
-  id        Int        @id @default(autoincrement())
-  email     String     @unique @db.VarChar(120)
-  phone     String?    @unique @db.VarChar(20)
-  password  String     @db.VarChar(255)
-  fullName  String     @db.VarChar(120)
-  avatar    String?    @db.VarChar(255)
-  role      Role       @default(TENANT)
-  status    UserStatus @default(ACTIVE)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id           Int        @id @default(autoincrement())
+  email        String     @unique @db.VarChar(120)
+  phone        String?    @unique @db.VarChar(20)
+  password     String     @db.VarChar(255)
+  fullName     String     @db.VarChar(120)
+  avatar       String?    @db.VarChar(255)
+  role         Role       @default(TENANT)
+  status       UserStatus @default(ACTIVE)
+  // Tang len 1 moi lan logout -> moi JWT cu (mang ver cu) het hieu luc
+  tokenVersion Int        @default(0)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
   properties      Property[]
   rentalRequests  RentalRequest[]
