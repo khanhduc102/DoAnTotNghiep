@@ -121,9 +121,9 @@ DELETE FROM users WHERE email LIKE 'postman%@duchome.vn';
 ## 5. Kiểm thử Mobile (Expo Go)
 
 ### 5.1. Chuẩn bị
-1. Máy tính và điện thoại **cùng một mạng Wi-Fi**.
+1. Điện thoại và máy tính **cùng một router**. Máy tính hiện cắm dây mạng, điện thoại bắt Wi-Fi của chính router đó (không dùng mạng Guest).
 2. Cài app **Expo Go** trên điện thoại. Phiên bản Expo Go phải hỗ trợ **SDK 57**, nếu Expo Go báo không tương thích thì cập nhật app.
-3. Lấy IP của máy tính: chạy `ipconfig`, xem dòng **IPv4 Address** của card Wi-Fi (hiện tại là `192.168.1.2`).
+3. Lấy IP của máy tính: chạy `ipconfig`, xem dòng **IPv4 Address** của card mạng đang kết nối. Hiện tại là card **Ethernet**, IP `192.168.1.2`. **Không** dùng `192.168.56.1`, đó là card ảo của VirtualBox.
 4. Mở `mobile/.env`, kiểm tra dòng:
    ```
    EXPO_PUBLIC_API_URL=http://192.168.1.2:4000/api
